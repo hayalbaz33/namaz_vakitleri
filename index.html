@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Namaz Vakti TV</title>
+
+  <style>
+    :root {
+      --bg: #06110d;
+      --panel: rgba(255, 255, 255, 0.08);
+      --text: #ffffff;
+      --muted: rgba(255, 255, 255, 0.65);
+      --danger: #8b0000;
+      --danger2: #b30000;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 35%),
+        linear-gradient(135deg, #020403, var(--bg));
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      transition: background 0.7s ease;
+    }
+
+    body.warning {
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.14), transparent 35%),
+        linear-gradient(135deg, var(--danger), var(--danger2));
+    }
+
+    .screen {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4vw;
+    }
+
+    .top-clock {
+      position: fixed;
+      top: 34px;
+      right: 44px;
+      font-size: clamp(28px, 3vw, 56px);
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .location {
+      position: fixed;
+      top: 44px;
+      left: 44px;
+      font-size: clamp(18px, 1.6vw, 30px);
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .label {
+      font-size: clamp(32px, 4vw, 72px);
+      font-weight: 800;
+      letter-spacing: 3px;
+      margin-bottom: 18px;
+    }
+
+    .prayer-name {
+      font-size: clamp(42px, 6vw, 110px);
+      font-weight: 900;
+      letter-spacing: 4px;
+      margin-bottom: 12px;
+    }
+
+    .countdown {
+      font-size: clamp(92px, 15vw, 260px);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -6px;
+      text-shadow: 0 18px 60px rgba(0,0,0,0.35);
+    }
+
+    .sub {
+      margin-top: 26px;
+      font-size: clamp(20px, 2.3vw, 42px);
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .times {
+      position: fixed;
+      bottom: 34px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 22px;
+      backdrop-filter: blur(14px);
+      color: rgba(255,255,255,0.86);
+      font-size: clamp(14px, 1.3vw, 24px);
+      white-space: nowrap;
+    }
+
+    .time-item {
+      padding: 0 8px;
+    }
+
+    .time-item b {
+      color: #fff;
+      margin-right: 5px;
+    }
+
+    .error {
+      max-width: 900px;
+      font-size: 34px;
+      line-height: 1.4;
+      color: #fff;
+      background: rgba(255,255,255,0.12);
+      padding: 34px;
+      border-radius: 28px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="location" id="location">MANAVGAT</div>
+  <div class="top-clock" id="clock">--:--</div>
+
+  <main class="screen">
+    <div class="label" id="label">SIRADAKİ VAKİT</div>
+    <div class="prayer-name" id="prayerName">YÜKLENİYOR</div>
+    <div class="countdown" id="countdown">--:--</div>
+    <div class="sub" id="subText">Namaz vakitleri alınıyor...</div>
+  </main>
+
+  <div class="times" id="times"></div>
+
+  <script>
+    // =========================
+    // AYARLAR
+    // =========================
+    const CITY = "Manavgat";
+    const COUNTRY = "Turkey";
+    const METHOD = 13; // AlAdhan: Diyanet İşleri Başkanlığı, Turkey - experimental
+    const WARNING_MINUTES = 10;
+
+    const PRAYERS = [
+      { key: "Fajr", name: "SABAH" },
+      { key: "Dhuhr", name: "ÖĞLE" },
+      { key: "Asr", name: "İKİNDİ" },
+      { key: "Maghrib", name: "AKŞAM" },
+      { key: "Isha", name: "YATSI" }
+    ];
+
+    let prayerSchedule = [];
+
+    const clockEl = document.getElementById("clock");
+    const labelEl = document.getElementById("label");
+    const prayerNameEl = document.getElementById("prayerName");
+    const countdownEl = document.getElementById("countdown");
+    const subTextEl = document.getElementById("subText");
+    const timesEl = document.getElementById("times");
+
+    function pad(n) {
+      return String(n).padStart(2, "0");
+    }
+
+    function formatDateForApi(date) {
+      return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()}`;
+    }
+
+    function cleanTime(timeText) {
+      // API bazen "05:12 (+03)" gibi dönebilir.
+      return timeText.replace(/[^\d:]/g, "").slice(0, 5);
+    }
+
+    function makeDateFromTime(baseDate, timeText) {
+      const [hour, minute] = cleanTime(timeText).split(":").map(Number);
+      return new Date(
+        baseDate.getFullYear(),
+        baseDate.getMonth(),
+        baseDate.getDate(),
+        hour,
+        minute,
+        0
+      );
+    }
+
+    async function fetchTimings(date) {
+      const apiDate = formatDateForApi(date);
+      const url =
+        `https://api.aladhan.com/v1/timingsByCity/${apiDate}` +
+        `?city=${encodeURIComponent(CITY)}` +
+        `&country=${encodeURIComponent(COUNTRY)}` +
+        `&method=${METHOD}`;
+
+      const res = await fetch(url);
+      const json = await res.json();
+
+      if (!json || json.code !== 200) {
+        throw new Error("Namaz vakitleri alınamadı.");
+      }
+
+      return json.data.timings;
+    }
+
+    async function loadPrayerTimes() {
+      try {
+        const today = new Date();
+        const tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+
+        const todayTimings = await fetchTimings(today);
+        const tomorrowTimings = await fetchTimings(tomorrow);
+
+        prayerSchedule = [];
+
+        PRAYERS.forEach(p => {
+          prayerSchedule.push({
+            name: p.name,
+            time: cleanTime(todayTimings[p.key]),
+            date: makeDateFromTime(today, todayTimings[p.key])
+          });
+        });
+
+        PRAYERS.forEach(p => {
+          prayerSchedule.push({
+            name: p.name,
+            time: cleanTime(tomorrowTimings[p.key]),
+            date: makeDateFromTime(tomorrow, tomorrowTimings[p.key])
+          });
+        });
+
+        renderTodayTimes(todayTimings);
+        updateScreen();
+
+      } catch (err) {
+        document.querySelector(".screen").innerHTML = `
+          <div class="error">
+            Namaz vakitleri alınamadı.<br>
+            İnternet bağlantısını kontrol et.
+          </div>
+        `;
+      }
+    }
+
+    function renderTodayTimes(timings) {
+      timesEl.innerHTML = PRAYERS.map(p => {
+        return `<div class="time-item"><b>${p.name}</b>${cleanTime(timings[p.key])}</div>`;
+      }).join("");
+    }
+
+    function getNextPrayer() {
+      const now = new Date();
+      return prayerSchedule.find(p => p.date > now);
+    }
+
+    function formatCountdown(ms) {
+      const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      if (hours > 0) {
+        return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      }
+
+      return `${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    function updateClock() {
+      const now = new Date();
+      clockEl.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    }
+
+    function updateScreen() {
+      updateClock();
+
+      const next = getNextPrayer();
+
+      if (!next) {
+        return;
+      }
+
+      const now = new Date();
+      const diffMs = next.date - now;
+      const diffMinutes = diffMs / 1000 / 60;
+      const isWarning = diffMinutes <= WARNING_MINUTES;
+
+      document.body.classList.toggle("warning", isWarning);
+
+      if (isWarning) {
+        labelEl.textContent = "NAMAZA HAZIRLIK";
+        subTextEl.textContent = `${next.name} vaktine son ${Math.ceil(diffMinutes)} dakika`;
+      } else {
+        labelEl.textContent = "SIRADAKİ VAKİT";
+        subTextEl.textContent = `${next.time} vaktine kadar kalan süre`;
+      }
+
+      prayerNameEl.textContent = next.name;
+      countdownEl.textContent = formatCountdown(diffMs);
+    }
+
+    // iPad desteklerse ekranın uyumasını azaltmaya çalışır.
+    async function keepScreenAwake() {
+      try {
+        if ("wakeLock" in navigator) {
+          await navigator.wakeLock.request("screen");
+        }
+      } catch (e) {}
+    }
+
+    loadPrayerTimes();
+    keepScreenAwake();
+
+    setInterval(updateScreen, 1000);
+
+    // Gece 00:05 civarı yeni gün vakitlerini yeniden çek.
+    setInterval(() => {
+      const now = new Date();
+      if (now.getHours() === 0 && now.getMinutes() === 5) {
+        loadPrayerTimes();
+      }
+    }, 60 * 1000);
+  </script>
+</body>
+</html>
