@@ -1,4 +1,3 @@
-<h1>Namaz TV Test</h1>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -8,155 +7,332 @@
 
   <style>
     :root {
-      --bg: #06110d;
-      --panel: rgba(255, 255, 255, 0.08);
-      --text: #ffffff;
-      --muted: rgba(255, 255, 255, 0.65);
-      --danger: #8b0000;
-      --danger2: #b30000;
+      --bg-1: #fbf7ef;
+      --bg-2: #f1e7d6;
+      --card: rgba(255, 255, 255, 0.72);
+      --card-strong: rgba(255, 255, 255, 0.88);
+      --text: #2f241b;
+      --muted: #7b6a58;
+      --accent: #b08a57;
+      --accent-soft: #e9dbc4;
+      --line: rgba(176, 138, 87, 0.18);
+      --shadow: 0 20px 60px rgba(86, 61, 28, 0.12);
+
+      --warning-bg-1: #fff6ef;
+      --warning-bg-2: #f8dfd2;
+      --warning-accent: #c4644b;
+      --warning-soft: #f6e0d7;
     }
 
     * {
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
       overflow: hidden;
-      background:
-        radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 35%),
-        linear-gradient(135deg, #020403, var(--bg));
-      color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      transition: background 0.7s ease;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.95), transparent 28%),
+        radial-gradient(circle at top right, rgba(255,255,255,0.55), transparent 22%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      transition: background 0.5s ease;
     }
 
     body.warning {
       background:
-        radial-gradient(circle at top, rgba(255,255,255,0.14), transparent 35%),
-        linear-gradient(135deg, var(--danger), var(--danger2));
+        radial-gradient(circle at top left, rgba(255,255,255,0.95), transparent 28%),
+        radial-gradient(circle at top right, rgba(255,255,255,0.45), transparent 22%),
+        linear-gradient(135deg, var(--warning-bg-1), var(--warning-bg-2));
     }
 
     .screen {
-      height: 100vh;
+      width: 100%;
+      height: 100%;
+      padding: 34px 38px 28px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand-block {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 4vw;
+      gap: 6px;
     }
 
-    .top-clock {
-      position: fixed;
-      top: 34px;
-      right: 44px;
-      font-size: clamp(28px, 3vw, 56px);
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: rgba(255,255,255,0.92);
-    }
-
-    .location {
-      position: fixed;
-      top: 44px;
-      left: 44px;
-      font-size: clamp(18px, 1.6vw, 30px);
-      color: var(--muted);
-      letter-spacing: 1px;
+    .brand {
+      font-size: clamp(18px, 1.4vw, 28px);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--accent);
       text-transform: uppercase;
     }
 
-    .label {
-      font-size: clamp(32px, 4vw, 72px);
+    .location {
+      font-size: clamp(20px, 1.9vw, 34px);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+
+    .clock-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .date {
+      font-size: clamp(16px, 1.2vw, 24px);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .top-clock {
+      font-size: clamp(36px, 3.8vw, 64px);
       font-weight: 800;
-      letter-spacing: 3px;
-      margin-bottom: 18px;
+      letter-spacing: 0.03em;
+      color: var(--text);
+    }
+
+    .main-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .main-panel {
+      width: min(1180px, 100%);
+      border-radius: 34px;
+      padding: 42px 46px;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.55);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.28) 0%,
+        rgba(255,255,255,0.02) 100%
+      );
+      pointer-events: none;
+    }
+
+    .mini-label {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: clamp(16px, 1.2vw, 22px);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 26px;
+    }
+
+    body.warning .mini-label {
+      background: var(--warning-soft);
+      color: var(--warning-accent);
     }
 
     .prayer-name {
-      font-size: clamp(42px, 6vw, 110px);
+      position: relative;
+      z-index: 1;
+      font-size: clamp(54px, 6vw, 110px);
       font-weight: 900;
-      letter-spacing: 4px;
-      margin-bottom: 12px;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      color: var(--text);
     }
 
     .countdown {
-      font-size: clamp(92px, 15vw, 260px);
-      font-weight: 900;
+      position: relative;
+      z-index: 1;
+      font-size: clamp(96px, 14vw, 220px);
       line-height: 0.95;
-      letter-spacing: -6px;
-      text-shadow: 0 18px 60px rgba(0,0,0,0.35);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+
+    body.warning .countdown {
+      color: var(--warning-accent);
     }
 
     .sub {
-      margin-top: 26px;
-      font-size: clamp(20px, 2.3vw, 42px);
+      position: relative;
+      z-index: 1;
+      font-size: clamp(22px, 2vw, 36px);
+      font-weight: 700;
       color: var(--muted);
-      font-weight: 600;
-      letter-spacing: 1px;
+    }
+
+    .bottom {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .times-card {
+      background: var(--card-strong);
+      border: 1px solid rgba(255,255,255,0.62);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      padding: 18px;
+      backdrop-filter: blur(12px);
     }
 
     .times {
-      position: fixed;
-      bottom: 34px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 14px;
-      padding: 14px 18px;
-      background: var(--panel);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 22px;
-      backdrop-filter: blur(14px);
-      color: rgba(255,255,255,0.86);
-      font-size: clamp(14px, 1.3vw, 24px);
-      white-space: nowrap;
     }
 
     .time-item {
-      padding: 0 8px;
+      border-radius: 22px;
+      padding: 18px 10px;
+      background: rgba(255,255,255,0.52);
+      border: 1px solid var(--line);
+      text-align: center;
+      min-height: 92px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .time-item b {
-      color: #fff;
-      margin-right: 5px;
+    .time-name {
+      font-size: clamp(18px, 1.4vw, 24px);
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .time-value {
+      font-size: clamp(24px, 2vw, 36px);
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .time-item.active {
+      background: linear-gradient(180deg, #fff7ea, #f3e2c6);
+      border-color: rgba(176, 138, 87, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(176, 138, 87, 0.12);
+    }
+
+    body.warning .time-item.active {
+      background: linear-gradient(180deg, #fff4ef, #f7dfd5);
+      border-color: rgba(196, 100, 75, 0.30);
+      box-shadow: 0 10px 26px rgba(196, 100, 75, 0.12);
+    }
+
+    .error-wrap {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
     }
 
     .error {
-      max-width: 900px;
-      font-size: 34px;
-      line-height: 1.4;
-      color: #fff;
-      background: rgba(255,255,255,0.12);
-      padding: 34px;
-      border-radius: 28px;
+      max-width: 920px;
+      text-align: center;
+      background: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255,255,255,0.65);
+      border-radius: 30px;
+      padding: 36px;
+      font-size: 30px;
+      line-height: 1.5;
+      box-shadow: var(--shadow);
+      color: var(--text);
+    }
+
+    @media (max-width: 980px) {
+      .screen {
+        padding: 20px;
+      }
+
+      .main-panel {
+        padding: 30px 24px;
+        border-radius: 26px;
+      }
+
+      .times {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="location" id="location">MANAVGAT</div>
-  <div class="top-clock" id="clock">--:--</div>
-
   <main class="screen">
-    <div class="label" id="label">SIRADAKİ VAKİT</div>
-    <div class="prayer-name" id="prayerName">YÜKLENİYOR</div>
-    <div class="countdown" id="countdown">--:--</div>
-    <div class="sub" id="subText">Namaz vakitleri alınıyor...</div>
-  </main>
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand">Hayalhanem</div>
+        <div class="location" id="location">MERSİN MERKEZ</div>
+      </div>
 
-  <div class="times" id="times"></div>
+      <div class="clock-wrap">
+        <div class="date" id="dateText">--</div>
+        <div class="top-clock" id="clock">--:--</div>
+      </div>
+    </header>
+
+    <section class="main-card">
+      <div class="main-panel">
+        <div class="mini-label" id="label">Sıradaki Vakit</div>
+        <div class="prayer-name" id="prayerName">YÜKLENİYOR</div>
+        <div class="countdown" id="countdown">--:--</div>
+        <div class="sub" id="subText">Namaz vakitleri alınıyor...</div>
+      </div>
+    </section>
+
+    <section class="bottom">
+      <div class="times-card">
+        <div class="times" id="times"></div>
+      </div>
+    </section>
+  </main>
 
   <script>
     // =========================
     // AYARLAR
     // =========================
-    const CITY = "Manavgat";
-    const COUNTRY = "Turkey";
-    const METHOD = 13; // AlAdhan: Diyanet İşleri Başkanlığı, Turkey - experimental
+    const LOCATION_LABEL = "MERSİN MERKEZ";
+    const LATITUDE = 36.8121;
+    const LONGITUDE = 34.6415;
+    const METHOD = 13; // Diyanet/Türkiye
     const WARNING_MINUTES = 10;
 
     const PRAYERS = [
@@ -169,12 +345,16 @@
 
     let prayerSchedule = [];
 
+    const locationEl = document.getElementById("location");
+    const dateTextEl = document.getElementById("dateText");
     const clockEl = document.getElementById("clock");
     const labelEl = document.getElementById("label");
     const prayerNameEl = document.getElementById("prayerName");
     const countdownEl = document.getElementById("countdown");
     const subTextEl = document.getElementById("subText");
     const timesEl = document.getElementById("times");
+
+    locationEl.textContent = LOCATION_LABEL;
 
     function pad(n) {
       return String(n).padStart(2, "0");
@@ -185,7 +365,6 @@
     }
 
     function cleanTime(timeText) {
-      // API bazen "05:12 (+03)" gibi dönebilir.
       return timeText.replace(/[^\d:]/g, "").slice(0, 5);
     }
 
@@ -201,12 +380,20 @@
       );
     }
 
+    function formatTurkishDate(date) {
+      return new Intl.DateTimeFormat("tr-TR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      }).format(date);
+    }
+
     async function fetchTimings(date) {
       const apiDate = formatDateForApi(date);
       const url =
-        `https://api.aladhan.com/v1/timingsByCity/${apiDate}` +
-        `?city=${encodeURIComponent(CITY)}` +
-        `&country=${encodeURIComponent(COUNTRY)}` +
+        `https://api.aladhan.com/v1/timings/${apiDate}` +
+        `?latitude=${LATITUDE}` +
+        `&longitude=${LONGITUDE}` +
         `&method=${METHOD}`;
 
       const res = await fetch(url);
@@ -225,6 +412,8 @@
         const tomorrow = new Date();
         tomorrow.setDate(today.getDate() + 1);
 
+        dateTextEl.textContent = formatTurkishDate(today);
+
         const todayTimings = await fetchTimings(today);
         const tomorrowTimings = await fetchTimings(tomorrow);
 
@@ -232,6 +421,7 @@
 
         PRAYERS.forEach(p => {
           prayerSchedule.push({
+            key: p.key,
             name: p.name,
             time: cleanTime(todayTimings[p.key]),
             date: makeDateFromTime(today, todayTimings[p.key])
@@ -240,6 +430,7 @@
 
         PRAYERS.forEach(p => {
           prayerSchedule.push({
+            key: p.key,
             name: p.name,
             time: cleanTime(tomorrowTimings[p.key]),
             date: makeDateFromTime(tomorrow, tomorrowTimings[p.key])
@@ -250,18 +441,28 @@
         updateScreen();
 
       } catch (err) {
-        document.querySelector(".screen").innerHTML = `
-          <div class="error">
-            Namaz vakitleri alınamadı.<br>
-            İnternet bağlantısını kontrol et.
+        document.body.innerHTML = `
+          <div class="error-wrap">
+            <div class="error">
+              Namaz vakitleri alınamadı.<br>
+              İnternet bağlantısını kontrol et.
+            </div>
           </div>
         `;
       }
     }
 
     function renderTodayTimes(timings) {
+      const next = getNextPrayer();
+
       timesEl.innerHTML = PRAYERS.map(p => {
-        return `<div class="time-item"><b>${p.name}</b>${cleanTime(timings[p.key])}</div>`;
+        const isActive = next && next.name === p.name;
+        return `
+          <div class="time-item ${isActive ? "active" : ""}">
+            <div class="time-name">${p.name}</div>
+            <div class="time-value">${cleanTime(timings[p.key])}</div>
+          </div>
+        `;
       }).join("");
     }
 
@@ -286,16 +487,14 @@
     function updateClock() {
       const now = new Date();
       clockEl.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      dateTextEl.textContent = formatTurkishDate(now);
     }
 
     function updateScreen() {
       updateClock();
 
       const next = getNextPrayer();
-
-      if (!next) {
-        return;
-      }
+      if (!next) return;
 
       const now = new Date();
       const diffMs = next.date - now;
@@ -304,19 +503,21 @@
 
       document.body.classList.toggle("warning", isWarning);
 
-      if (isWarning) {
-        labelEl.textContent = "NAMAZA HAZIRLIK";
-        subTextEl.textContent = `${next.name} vaktine son ${Math.ceil(diffMinutes)} dakika`;
-      } else {
-        labelEl.textContent = "SIRADAKİ VAKİT";
-        subTextEl.textContent = `${next.time} vaktine kadar kalan süre`;
-      }
-
+      labelEl.textContent = isWarning ? "Namaza Hazırlık" : "Sıradaki Vakit";
       prayerNameEl.textContent = next.name;
       countdownEl.textContent = formatCountdown(diffMs);
+
+      if (isWarning) {
+        subTextEl.textContent = `${next.time} • Son ${Math.ceil(diffMinutes)} dakika`;
+      } else {
+        subTextEl.textContent = `${next.time} vaktine kalan süre`;
+      }
+
+      // Alt saat kartlarını yenile (aktif vakit vurgusu güncellensin)
+      const today = new Date();
+      fetchTimings(today).then(renderTodayTimes).catch(() => {});
     }
 
-    // iPad desteklerse ekranın uyumasını azaltmaya çalışır.
     async function keepScreenAwake() {
       try {
         if ("wakeLock" in navigator) {
@@ -330,7 +531,6 @@
 
     setInterval(updateScreen, 1000);
 
-    // Gece 00:05 civarı yeni gün vakitlerini yeniden çek.
     setInterval(() => {
       const now = new Date();
       if (now.getHours() === 0 && now.getMinutes() === 5) {
