@@ -1,10 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Mono:wght@300;400;500&display=swap');
 
 :root {
-  --bg: #020408;
   --white: #f4f4f4;
   --muted: rgba(255, 255, 255, 0.58);
-  --soft: rgba(255, 255, 255, 0.10);
   --line: rgba(255, 255, 255, 0.18);
   --gold: #d6b16a;
   --danger: #ff3636;
@@ -17,12 +15,15 @@
 html,
 body {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   margin: 0;
-  overflow: hidden;
   background: #000;
   font-family: "Inter", Arial, sans-serif;
   color: var(--white);
+}
+
+body {
+  overflow: hidden;
 }
 
 .screen {
@@ -31,6 +32,7 @@ body {
   height: 100vh;
   min-width: 1000px;
   min-height: 560px;
+  overflow: hidden;
   background:
     radial-gradient(circle at 50% 34%, rgba(90, 135, 170, 0.16), transparent 30%),
     radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.035), transparent 38%),
@@ -57,7 +59,6 @@ body {
   to { transform: translateY(120px); }
 }
 
-/* hafif sinema dokusu */
 .noise {
   position: absolute;
   inset: 0;
@@ -80,8 +81,8 @@ body {
 .topbar {
   position: relative;
   z-index: 5;
-  height: 150px;
-  padding: 54px 58px 0;
+  height: 145px;
+  padding: 48px 58px 0;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -131,7 +132,7 @@ body {
 
 .planet {
   position: absolute;
-  top: 2.5vh;
+  top: 2vh;
   left: 50%;
   width: min(78vw, 1180px);
   aspect-ratio: 1 / 1;
@@ -188,7 +189,7 @@ body {
 .heroContent {
   position: relative;
   z-index: 5;
-  margin-top: -10px;
+  margin-top: -38px;
   text-align: center;
   width: min(920px, 76vw);
 }
@@ -198,7 +199,7 @@ body {
   letter-spacing: 17px;
   font-size: 22px;
   font-weight: 500;
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 }
 
 h1 {
@@ -212,11 +213,11 @@ h1 {
   text-shadow: 0 0 42px rgba(255,255,255,.20);
 }
 
-/* SAYAÇ — sabit genişlik, oynamaz */
+/* sayaç */
 .countdownBox {
   width: 820px;
   height: 150px;
-  margin: 44px auto 20px;
+  margin: 42px auto 18px;
   padding: 0 38px;
   border: 1px solid rgba(255,255,255,.38);
   border-radius: 8px;
@@ -243,18 +244,37 @@ h1 {
   box-shadow: 0 0 18px var(--gold);
 }
 
-#countdownText {
-  display: block;
+.timerDigits {
   width: 100%;
-  text-align: center;
-  font-family: "Roboto Mono", monospace;
+  height: 100%;
+  display: grid;
+  grid-template-columns:
+    1fr 1fr .55fr
+    1fr 1fr .55fr
+    1fr 1fr;
+  align-items: center;
+  justify-items: center;
+
+  font-family: "Roboto Mono", "Courier New", monospace;
   font-size: clamp(72px, 7.4vw, 120px);
   font-weight: 300;
   line-height: 1;
-  letter-spacing: .10em;
+  color: rgba(255,255,255,.94);
+  white-space: nowrap;
+}
+
+.timerDigit,
+.timerColon {
+  display: block;
+  width: 100%;
+  text-align: center;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-  white-space: nowrap;
+}
+
+.timerColon {
+  transform: translateY(-4px);
+  opacity: .9;
 }
 
 .nextTime {
@@ -274,7 +294,7 @@ h1 {
   z-index: 5;
   left: 72px;
   right: 72px;
-  bottom: 78px;
+  bottom: 108px;
 }
 
 .sectionTitle {
@@ -282,7 +302,7 @@ h1 {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 34px;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
 .sectionTitle span {
@@ -293,12 +313,12 @@ h1 {
 .sectionTitle p {
   margin: 0;
   color: var(--gold);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  letter-spacing: 14px;
+  letter-spacing: 13px;
 }
 
-/* Daha premium, daha ince vakit görünümü */
+/* DÜZELTİLDİ: kutular yukarı alındı, iç yazı kesilmiyor */
 .cards {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -306,8 +326,8 @@ h1 {
 }
 
 .timeCard {
-  height: 126px;
-  padding: 22px 26px;
+  height: 138px;
+  padding: 21px 26px 18px;
   border: 1px solid rgba(255,255,255,.105);
   border-radius: 8px;
   background:
@@ -318,7 +338,10 @@ h1 {
     0 0 24px rgba(0,0,0,.22),
     inset 0 1px 0 rgba(255,255,255,.035);
   transition: .35s ease;
-  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .timeCard div {
@@ -330,10 +353,10 @@ h1 {
 
 .timeCard strong {
   display: block;
-  margin-top: 24px;
   font-family: "Roboto Mono", monospace;
-  font-size: clamp(36px, 3.25vw, 62px);
+  font-size: clamp(34px, 3vw, 56px);
   font-weight: 300;
+  line-height: 1;
   letter-spacing: 1px;
   color: rgba(255,255,255,.82);
   font-variant-numeric: tabular-nums;
@@ -359,7 +382,7 @@ h1 {
 footer {
   position: absolute;
   z-index: 5;
-  bottom: 30px;
+  bottom: 32px;
   width: 100%;
   text-align: center;
   color: rgba(255,255,255,.30);
@@ -391,6 +414,7 @@ body.warning .timeCard.active {
   box-shadow: 0 0 34px rgba(255, 40, 40, .18);
 }
 
+/* orta ekran / küçük laptop */
 @media (max-width: 1300px) {
   .topbar {
     padding-left: 42px;
@@ -400,6 +424,7 @@ body.warning .timeCard.active {
   .times {
     left: 42px;
     right: 42px;
+    bottom: 100px;
   }
 
   .cards {
@@ -407,14 +432,222 @@ body.warning .timeCard.active {
   }
 
   .timeCard {
-    padding: 20px;
+    height: 130px;
+    padding: 19px 20px 17px;
+  }
+
+  .timeCard strong {
+    font-size: clamp(32px, 3vw, 48px);
   }
 
   .countdownBox {
     width: 700px;
   }
+}
 
-  #countdownText {
-    letter-spacing: .07em;
+/* tablet */
+@media (max-width: 900px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .screen {
+    width: 100%;
+    min-width: 0;
+    min-height: 100svh;
+    height: auto;
+    overflow: hidden;
+    padding-bottom: 42px;
+  }
+
+  .topbar {
+    height: auto;
+    padding: 28px 22px 0;
+    display: block;
+  }
+
+  .city {
+    font-size: 42px;
+    letter-spacing: -1.5px;
+  }
+
+  .clockBox {
+    width: 100%;
+    min-width: 0;
+    margin-top: 18px;
+    padding: 16px 18px;
+  }
+
+  .clock {
+    font-size: 42px;
+  }
+
+  .date {
+    font-size: 14px;
+  }
+
+  .hero {
+    position: relative;
+    height: 560px;
+    inset: auto;
+    margin-top: 10px;
+  }
+
+  .planet {
+    top: 10px;
+    width: 760px;
+    max-width: 150vw;
+  }
+
+  .heroContent {
+    width: calc(100% - 32px);
+    margin-top: 40px;
+  }
+
+  .smallTitle {
+    font-size: 14px;
+    letter-spacing: 10px;
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-size: 58px;
+    letter-spacing: .28em;
+    text-indent: .28em;
+  }
+
+  .countdownBox {
+    width: 100%;
+    max-width: 520px;
+    height: 105px;
+    margin-top: 28px;
+    padding: 0 18px;
+  }
+
+  .timerDigits {
+    font-size: 58px;
+  }
+
+  .nextTime {
+    font-size: 17px;
+    letter-spacing: 5px;
+  }
+
+  .times {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    z-index: 5;
+    width: calc(100% - 32px);
+    margin: -18px auto 0;
+  }
+
+  .sectionTitle {
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .sectionTitle p {
+    font-size: 12px;
+    letter-spacing: 6px;
+    white-space: nowrap;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .timeCard {
+    height: 112px;
+    padding: 16px 18px;
+  }
+
+  .timeCard div {
+    font-size: 12px;
+    letter-spacing: 5px;
+  }
+
+  .timeCard strong {
+    font-size: 34px;
+  }
+
+  footer {
+    position: relative;
+    bottom: auto;
+    margin-top: 26px;
+    padding-bottom: 20px;
+    font-size: 13px;
+  }
+}
+
+/* telefon */
+@media (max-width: 520px) {
+  .topbar {
+    padding: 22px 16px 0;
+  }
+
+  .city {
+    font-size: 34px;
+  }
+
+  .clock {
+    font-size: 36px;
+  }
+
+  .hero {
+    height: 500px;
+  }
+
+  .planet {
+    top: 18px;
+    width: 660px;
+    max-width: 170vw;
+  }
+
+  .smallTitle {
+    font-size: 12px;
+    letter-spacing: 7px;
+  }
+
+  h1 {
+    font-size: 44px;
+    letter-spacing: .22em;
+    text-indent: .22em;
+  }
+
+  .countdownBox {
+    height: 92px;
+    max-width: 360px;
+    border-radius: 7px;
+  }
+
+  .timerDigits {
+    font-size: 42px;
+  }
+
+  .nextTime {
+    font-size: 14px;
+    letter-spacing: 3px;
+  }
+
+  .times {
+    width: calc(100% - 24px);
+    margin-top: -10px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .timeCard {
+    height: 98px;
+    padding: 14px 15px;
+  }
+
+  .timeCard strong {
+    font-size: 29px;
   }
 }
