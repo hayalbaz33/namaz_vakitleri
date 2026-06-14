@@ -1,12 +1,96 @@
-Namaz Vakti TV
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-Mersin Merkez
-— --:--
-Sıradaki vakit
+  <title>Namaz Vakti TV</title>
 
-Yükleniyor
---:--:-- Vakit: --:--
-Son 10 dakikada ekran dikkat moduna geçer.
+  <link rel="stylesheet" href="style.css" />
+</head>
 
-Bugünün vakitleri AlAdhan · Diyanet metodu
-Vakitler hazırlanıyor…
+<body>
+  <main class="screen">
+
+    <div class="stars"></div>
+    <div class="noise"></div>
+    <div class="vignette"></div>
+
+    <section class="topbar">
+      <div>
+        <div class="brand">NAMAZ VAKTİ TV</div>
+        <div class="city" id="cityName">Mersin Merkez</div>
+      </div>
+
+      <div class="clockBox">
+        <div class="date" id="todayText">Yükleniyor...</div>
+        <div class="clock" id="clockText">--:--</div>
+      </div>
+    </section>
+
+    <section class="hero">
+      <div class="planet"></div>
+
+      <div class="heroContent">
+        <div class="smallTitle">SIRADAKİ VAKİT</div>
+        <h1 id="nextPrayerName">---</h1>
+
+        <div class="countdownBox">
+          <span id="countdownText">--:--:--</span>
+        </div>
+
+        <div class="nextTime">
+          Vakit: <span id="nextPrayerTime">--:--</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="times">
+      <div class="sectionTitle">
+        <span></span>
+        <p>BUGÜNÜN VAKİTLERİ</p>
+        <span></span>
+      </div>
+
+      <div class="cards">
+        <div class="timeCard" data-prayer="Fajr">
+          <div>İMSAK</div>
+          <strong id="timeFajr">--:--</strong>
+        </div>
+
+        <div class="timeCard" data-prayer="Sunrise">
+          <div>GÜNEŞ</div>
+          <strong id="timeSunrise">--:--</strong>
+        </div>
+
+        <div class="timeCard" data-prayer="Dhuhr">
+          <div>ÖĞLE</div>
+          <strong id="timeDhuhr">--:--</strong>
+        </div>
+
+        <div class="timeCard" data-prayer="Asr">
+          <div>İKİNDİ</div>
+          <strong id="timeAsr">--:--</strong>
+        </div>
+
+        <div class="timeCard" data-prayer="Maghrib">
+          <div>AKŞAM</div>
+          <strong id="timeMaghrib">--:--</strong>
+        </div>
+
+        <div class="timeCard" data-prayer="Isha">
+          <div>YATSI</div>
+          <strong id="timeIsha">--:--</strong>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span id="statusText">Vakitler hazırlanıyor...</span>
+    </footer>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
