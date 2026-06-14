@@ -1,0 +1,525 @@
+:root {
+  --bg-1: #f7f0df;
+  --bg-2: #d7c69f;
+  --ink: #10261f;
+  --muted: rgba(16, 38, 31, 0.68);
+  --deep: #092019;
+  --deep-2: #12382d;
+  --gold: #d3aa54;
+  --gold-2: #fff1bd;
+  --card: rgba(255, 252, 241, 0.72);
+  --card-border: rgba(139, 113, 58, 0.22);
+  --danger: #8b1515;
+  --danger-2: #ffefe4;
+  --progress: 0deg;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 25% 18%, rgba(255, 244, 196, 0.72), transparent 26%),
+    radial-gradient(circle at 78% 10%, rgba(23, 73, 58, 0.22), transparent 29%),
+    linear-gradient(140deg, var(--bg-1) 0%, #efe3c5 42%, var(--bg-2) 100%);
+  transition: background 700ms ease, color 700ms ease;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+body::before {
+  opacity: 0.24;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 0 1px, transparent 1.7px),
+    radial-gradient(circle, rgba(211, 170, 84, 0.72) 0 1px, transparent 1.6px);
+  background-size: 92px 92px, 137px 137px;
+  animation: starDrift 42s linear infinite;
+}
+
+body::after {
+  background: linear-gradient(90deg, rgba(255,255,255,0.22), transparent 18%, transparent 82%, rgba(255,255,255,0.22));
+}
+
+body.warning {
+  color: #fff7ec;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 223, 153, 0.3), transparent 26%),
+    radial-gradient(circle at 25% 80%, rgba(255, 103, 77, 0.38), transparent 28%),
+    linear-gradient(140deg, #611010 0%, #8d1717 45%, #2d0a0a 100%);
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto 40px;
+  width: 100vw;
+  height: 100vh;
+  padding: clamp(18px, 2.2vw, 42px);
+  gap: clamp(14px, 1.6vw, 26px);
+}
+
+.hero {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: clamp(28px, 3vw, 58px);
+  background:
+    linear-gradient(145deg, rgba(255, 253, 245, 0.54), rgba(255, 250, 236, 0.16)),
+    radial-gradient(circle at 50% 10%, rgba(18, 56, 45, 0.26), transparent 46%);
+  box-shadow:
+    0 38px 90px rgba(30, 25, 13, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(18px);
+}
+
+body.warning .hero {
+  border-color: rgba(255, 224, 182, 0.32);
+  background: linear-gradient(145deg, rgba(255, 241, 218, 0.12), rgba(255, 255, 255, 0.04));
+  box-shadow: 0 40px 110px rgba(34, 0, 0, 0.36), inset 0 0 80px rgba(255, 199, 113, 0.06);
+}
+
+.topbar {
+  position: absolute;
+  top: clamp(22px, 2.4vw, 44px);
+  left: clamp(24px, 3vw, 56px);
+  right: clamp(24px, 3vw, 56px);
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.eyebrow,
+.sectionLabel {
+  margin: 0 0 8px;
+  color: var(--gold);
+  font-size: clamp(12px, 0.95vw, 17px);
+  font-weight: 800;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+
+body.warning .eyebrow,
+body.warning .sectionLabel {
+  color: #ffe0a8;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(30px, 3.4vw, 66px);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.dateBox {
+  min-width: 260px;
+  padding: 14px 18px;
+  text-align: right;
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  background: rgba(255, 252, 242, 0.44);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46);
+}
+
+.dateBox span {
+  display: block;
+  color: var(--muted);
+  font-size: clamp(12px, 0.95vw, 16px);
+  font-weight: 700;
+}
+
+.dateBox strong {
+  display: block;
+  margin-top: 2px;
+  font-size: clamp(28px, 2.8vw, 54px);
+  letter-spacing: -0.05em;
+}
+
+body.warning .dateBox {
+  border-color: rgba(255, 224, 182, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.warning .dateBox span {
+  color: rgba(255, 247, 236, 0.72);
+}
+
+.spaceScene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.spaceScene::before {
+  content: "";
+  position: absolute;
+  width: min(82vw, 1200px);
+  height: min(82vw, 1200px);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(211, 170, 84, 0.12), transparent 65%);
+  filter: blur(4px);
+}
+
+.orbit {
+  position: absolute;
+  border: 1px solid rgba(211, 170, 84, 0.2);
+  border-radius: 50%;
+  transform: rotateX(66deg) rotateZ(-16deg);
+}
+
+.orbitOne {
+  width: min(62vw, 900px);
+  height: min(22vw, 320px);
+  animation: orbitPulse 7s ease-in-out infinite;
+}
+
+.orbitTwo {
+  width: min(78vw, 1080px);
+  height: min(30vw, 430px);
+  opacity: 0.45;
+  animation: orbitPulse 7s ease-in-out infinite reverse;
+}
+
+.globe {
+  position: relative;
+  width: min(31vw, 500px);
+  aspect-ratio: 1;
+  margin-top: -5vh;
+  border-radius: 50%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255, 244, 202, 0.9), rgba(211, 170, 84, 0.28) 17%, transparent 25%),
+    radial-gradient(circle at 54% 54%, #315f51 0%, #173f34 50%, #071914 100%);
+  box-shadow:
+    inset -45px -30px 65px rgba(1, 11, 8, 0.62),
+    inset 24px 14px 44px rgba(255, 244, 201, 0.24),
+    0 0 58px rgba(211, 170, 84, 0.22),
+    0 34px 120px rgba(8, 27, 21, 0.35);
+  transform: translateY(8px);
+}
+
+.globeGlow {
+  position: absolute;
+  inset: -8%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, rgba(255,255,255,0.28), transparent 20%);
+  mix-blend-mode: screen;
+  z-index: 4;
+}
+
+.globeMap {
+  position: absolute;
+  inset: 0;
+  opacity: 0.74;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='450' viewBox='0 0 900 450'%3E%3Cg fill='%23d6b05e'%3E%3Cpath d='M106 145c34-34 83-40 124-18 24 12 44 27 72 25 23-1 38 10 45 28 10 26-1 54-30 62-36 10-48 39-79 52-25 11-55 1-69-22-17-27-51-28-78-39-31-13-25-59 15-88z'/%3E%3Cpath d='M381 86c36-12 78-6 107 19 29 25 16 61-19 73-26 9-42 32-68 41-38 13-76-20-68-59 6-31 21-65 48-74z'/%3E%3Cpath d='M513 222c29-20 72-17 92 12 25 36 22 88-3 125-24 34-73 43-102 12-21-23-12-52-1-77 10-24-13-51 14-72z'/%3E%3Cpath d='M642 119c30-22 78-31 110-7 36 27 45 75 16 105-25 27-66 14-92 36-30 25-72 4-79-33-7-36 13-78 45-101z'/%3E%3Cpath d='M729 306c30-8 66 6 75 39 8 29-22 58-57 57-32-1-63-24-59-55 3-22 19-35 41-41z'/%3E%3Cpath d='M46 304c24-19 58-16 82 3 25 20 24 56-1 73-26 18-64 11-83-14-16-21-17-46 2-62z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 150% 100%;
+  animation: globeRotate 28s linear infinite;
+  filter: blur(0.15px) saturate(1.1);
+}
+
+.globeMap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.14), transparent 18%, transparent 70%, rgba(0,0,0,0.28)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.065) 0 1px, transparent 1px 34px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 34px);
+  border-radius: 50%;
+}
+
+.globeShade {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 36% 28%, transparent 0 34%, rgba(0,0,0,0.12) 56%, rgba(0,0,0,0.63) 100%),
+    linear-gradient(115deg, transparent 0 52%, rgba(0,0,0,0.54) 100%);
+}
+
+.countdownPanel {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(28px, 5.2vh, 82px);
+  z-index: 6;
+  width: min(86vw, 820px);
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.countdownPanel h2 {
+  margin: 0 0 14px;
+  font-size: clamp(42px, 5.8vw, 112px);
+  line-height: 0.9;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-shadow: 0 14px 48px rgba(7, 28, 22, 0.22);
+}
+
+.timerShell {
+  display: grid;
+  place-items: center;
+  width: min(76vw, 760px);
+  min-height: clamp(112px, 11vw, 178px);
+  padding: 7px;
+  border-radius: 42px;
+  background:
+    conic-gradient(from -90deg, var(--gold) var(--progress), rgba(255,255,255,0.28) 0),
+    linear-gradient(140deg, rgba(255,255,255,0.72), rgba(255,255,255,0.22));
+  box-shadow: 0 28px 80px rgba(44, 35, 14, 0.18);
+}
+
+.timerInner {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(98px, 9.8vw, 160px);
+  border-radius: 36px;
+  background: rgba(255, 252, 240, 0.82);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+#countdownLabel {
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(56px, 7.8vw, 150px);
+  font-weight: 900;
+  line-height: 0.88;
+  letter-spacing: 0.08em;
+}
+
+#targetTimeLabel {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: clamp(15px, 1.25vw, 23px);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.warningText {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: clamp(14px, 1.1vw, 20px);
+  font-weight: 700;
+}
+
+body.warning .countdownPanel h2,
+body.warning #countdownLabel {
+  text-shadow: 0 0 42px rgba(255, 211, 117, 0.28);
+}
+
+body.warning .timerShell {
+  background:
+    conic-gradient(from -90deg, #ffd06c var(--progress), rgba(255,255,255,0.18) 0),
+    linear-gradient(140deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06));
+  box-shadow: 0 28px 100px rgba(255, 111, 70, 0.22);
+}
+
+body.warning .timerInner {
+  background: rgba(54, 7, 7, 0.76);
+}
+
+body.warning #targetTimeLabel,
+body.warning .warningText {
+  color: rgba(255, 247, 236, 0.76);
+}
+
+.timesPanel {
+  border: 1px solid var(--card-border);
+  border-radius: 34px;
+  padding: clamp(14px, 1.5vw, 24px);
+  background: rgba(255, 251, 239, 0.58);
+  box-shadow: 0 18px 48px rgba(31, 27, 16, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.52);
+  backdrop-filter: blur(18px);
+}
+
+.timesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 12px;
+  font-size: clamp(15px, 1.15vw, 22px);
+  font-weight: 900;
+}
+
+.timesHeader small {
+  color: var(--muted);
+  font-size: clamp(11px, 0.85vw, 15px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.timesGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(10px, 1vw, 16px);
+}
+
+.timeCard {
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(86px, 8.5vw, 128px);
+  padding: clamp(14px, 1.35vw, 22px);
+  border: 1px solid rgba(139, 113, 58, 0.18);
+  border-radius: 26px;
+  background: var(--card);
+  transition: transform 350ms ease, background 350ms ease, border-color 350ms ease, box-shadow 350ms ease;
+}
+
+.timeCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 20% 10%, rgba(211, 170, 84, 0.25), transparent 44%);
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+.timeCard.active {
+  transform: translateY(-5px);
+  border-color: rgba(211, 170, 84, 0.75);
+  background: rgba(255, 248, 219, 0.9);
+  box-shadow: 0 18px 44px rgba(119, 88, 24, 0.18);
+}
+
+.timeCard.active::before {
+  opacity: 1;
+}
+
+.timeCard span,
+.timeCard strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.timeCard span {
+  color: var(--muted);
+  font-size: clamp(13px, 1vw, 18px);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.timeCard strong {
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(32px, 3.5vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+body.warning .timesPanel {
+  border-color: rgba(255, 224, 182, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.warning .timesHeader small,
+body.warning .timeCard span {
+  color: rgba(255, 247, 236, 0.66);
+}
+
+body.warning .timeCard {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.warning .timeCard.active {
+  border-color: rgba(255, 208, 108, 0.86);
+  background: rgba(255, 208, 108, 0.16);
+  box-shadow: 0 18px 52px rgba(255, 86, 50, 0.22);
+}
+
+.footerNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: clamp(12px, 0.95vw, 16px);
+  font-weight: 800;
+  text-align: center;
+}
+
+body.warning .footerNote {
+  color: rgba(255, 247, 236, 0.68);
+}
+
+@keyframes globeRotate {
+  from { background-position: 0% 50%; }
+  to { background-position: -300% 50%; }
+}
+
+@keyframes orbitPulse {
+  0%, 100% { opacity: 0.28; transform: rotateX(66deg) rotateZ(-16deg) scale(1); }
+  50% { opacity: 0.52; transform: rotateX(66deg) rotateZ(-16deg) scale(1.035); }
+}
+
+@keyframes starDrift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 460px 260px, -320px 420px; }
+}
+
+@media (max-width: 980px) {
+  body {
+    overflow: auto;
+  }
+
+  .app {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .hero {
+    min-height: 720px;
+  }
+
+  .topbar {
+    position: relative;
+    inset: auto;
+    padding: 24px;
+  }
+
+  .dateBox {
+    min-width: 0;
+  }
+
+  .globe {
+    width: min(62vw, 380px);
+    margin-top: -130px;
+  }
+
+  .countdownPanel {
+    bottom: 34px;
+  }
+
+  .timesGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
