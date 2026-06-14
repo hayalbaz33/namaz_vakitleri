@@ -5,24 +5,27 @@ const SETTINGS = {
 
   /*
     AlAdhan method 13:
-    Diyanet İşleri Başkanlığı, Turkey
+    Diyanet İşleri Başkanlığı, Turkey.
+    school: 1 ise ikindi vakti için Hanefi hesap kullanılır.
   */
   method: 13,
+  school: 1,
 
   warningMinutes: 10
 };
 
 const PRAYERS = [
-  { key: "Fajr", label: "İMSAK", name: "İMSAK" },
-  { key: "Sunrise", label: "GÜNEŞ", name: "GÜNEŞ" },
-  { key: "Dhuhr", label: "ÖĞLE", name: "ÖĞLE" },
-  { key: "Asr", label: "İKİNDİ", name: "İKİNDİ" },
-  { key: "Maghrib", label: "AKŞAM", name: "AKŞAM" },
-  { key: "Isha", label: "YATSI", name: "YATSI" }
+  { key: "Fajr", name: "İMSAK" },
+  { key: "Sunrise", name: "GÜNEŞ" },
+  { key: "Dhuhr", name: "ÖĞLE" },
+  { key: "Asr", name: "İKİNDİ" },
+  { key: "Maghrib", name: "AKŞAM" },
+  { key: "Isha", name: "YATSI" }
 ];
 
 let prayerTimes = {};
 let nextPrayer = null;
+let loading = false;
 
 const el = {
   cityName: document.getElementById("cityName"),
@@ -106,11 +109,7 @@ function findNextPrayer() {
     const date = timeToDate(time);
 
     if (date > now) {
-      return {
-        ...prayer,
-        time,
-        date
-      };
+      return { ...prayer, time, date };
     }
   }
 
@@ -160,20 +159,24 @@ function updateScreen() {
     el.statusText.textContent = "Vakitler güncel.";
   }
 
-  if (diff <= 0) {
+  if (diff <= 0 && !loading) {
     loadPrayerTimes();
   }
 }
 
 async function loadPrayerTimes() {
+  if (loading) return;
+
   try {
+    loading = true;
     el.statusText.textContent = "Vakitler yükleniyor...";
 
     const url =
       `https://api.aladhan.com/v1/timingsByCity` +
       `?city=${encodeURIComponent(SETTINGS.apiCity)}` +
       `&country=${encodeURIComponent(SETTINGS.apiCountry)}` +
-      `&method=${SETTINGS.method}`;
+      `&method=${SETTINGS.method}` +
+      `&school=${SETTINGS.school}`;
 
     const response = await fetch(url);
 
@@ -182,7 +185,6 @@ async function loadPrayerTimes() {
     }
 
     const result = await response.json();
-
     prayerTimes = result.data.timings;
 
     renderTimes();
@@ -192,12 +194,9 @@ async function loadPrayerTimes() {
   } catch (error) {
     console.error(error);
 
-    el.statusText.textContent = "Vakitler alınamadı. İnternet veya API bağlantısını kontrol et.";
+    el.statusText.textContent =
+      "Vakitler alınamadı. İnternet veya API bağlantısını kontrol et.";
 
-    /*
-      API çalışmazsa ekran boş kalmasın diye yedek örnek değerler.
-      İstersen bunları silebilirsin.
-    */
     prayerTimes = {
       Fajr: "03:30",
       Sunrise: "05:15",
@@ -209,6 +208,8 @@ async function loadPrayerTimes() {
 
     renderTimes();
     updateScreen();
+  } finally {
+    loading = false;
   }
 }
 
@@ -216,11 +217,13 @@ function init() {
   el.cityName.textContent = SETTINGS.cityName;
 
   loadPrayerTimes();
+  updateScreen();
 
   setInterval(updateScreen, 1000);
 
   /*
-    Gün değişimlerinde vakitleri tazelemek için.
+    Gün içinde API tarafında güncelleme veya tarih değişimi olursa
+    ekran kendini yenilesin diye 30 dakikada bir tekrar çeker.
   */
   setInterval(loadPrayerTimes, 1000 * 60 * 30);
 }

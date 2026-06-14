@@ -1,26 +1,21 @@
 # Namaz Vakti TV
 
-GitHub Pages için hazırlanmış premium, animasyonlu namaz vakti ekranı.
-
 ## Kurulum
 
-1. Bu klasördeki dosyaları GitHub repo ana dizinine yükle.
-2. Repository > Settings > Pages bölümünden GitHub Pages'i aktif et.
-3. Siteyi TV/Apple TV/iPad ekranına yansıt.
+1. Bu dosyaları GitHub repo ana dizinine yükle.
+2. Kendi dünya görselini `assets/world.jpg` olarak ekle.
+3. GitHub Pages'i aç.
+4. TV ekranına yansıt.
 
-## Konum Ayarı
+## Dosya yapısı
 
-`script.js` dosyasının en üstündeki CONFIG alanından değiştirilebilir:
-
-```js
-const CONFIG = {
-  city: "Mersin",
-  country: "Turkey",
-  method: 13,
-  school: 1,
-  warningMinutes: 10,
-  includeSunriseInCountdown: false,
-};
+```txt
+index.html
+style.css
+script.js
+assets/world.jpg
 ```
 
-`method: 13` AlAdhan tarafında Türkiye / Diyanet metodudur.
+## Not
+
+Kod Mersin Merkez için ayarlı. Şehir değiştirmek için `script.js` içindeki `SETTINGS` alanını düzenle.
