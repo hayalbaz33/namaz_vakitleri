@@ -1,63 +1,12 @@
-<!doctype html>
-<html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#10261f" />
-    <title>Namaz Vakti TV</title>
-    <link rel="preconnect" href="https://api.aladhan.com" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <main class="app" aria-live="polite">
-      <section class="hero">
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">Namaz Vakti TV</p>
-            <h1 id="locationLabel">Mersin Merkez</h1>
-          </div>
-          <div class="dateBox">
-            <span id="todayLabel">—</span>
-            <strong id="clockLabel">--:--</strong>
-          </div>
-        </header>
+Namaz Vakti TV
 
-        <div class="spaceScene" aria-hidden="true">
-          <div class="orbit orbitOne"></div>
-          <div class="orbit orbitTwo"></div>
-          <div class="globe">
-            <div class="globeGlow"></div>
-            <div class="globeMap"></div>
-            <div class="globeShade"></div>
-          </div>
-        </div>
+Mersin Merkez
+— --:--
+Sıradaki vakit
 
-        <section class="countdownPanel">
-          <p class="sectionLabel">Sıradaki vakit</p>
-          <h2 id="nextPrayerLabel">Yükleniyor</h2>
-          <div class="timerShell">
-            <div class="timerInner">
-              <span id="countdownLabel">--:--:--</span>
-              <small id="targetTimeLabel">Vakit: --:--</small>
-            </div>
-          </div>
-          <p id="warningLabel" class="warningText">Son 10 dakikada ekran dikkat moduna geçer.</p>
-        </section>
-      </section>
+Yükleniyor
+--:--:-- Vakit: --:--
+Son 10 dakikada ekran dikkat moduna geçer.
 
-      <section class="timesPanel">
-        <div class="timesHeader">
-          <span>Bugünün vakitleri</span>
-          <small id="sourceLabel">AlAdhan · Diyanet metodu</small>
-        </div>
-        <div id="timesGrid" class="timesGrid"></div>
-      </section>
-
-      <footer class="footerNote">
-        <span id="statusLabel">Vakitler hazırlanıyor…</span>
-      </footer>
-    </main>
-
-    <script src="script.js"></script>
-  </body>
-</html>
+Bugünün vakitleri AlAdhan · Diyanet metodu
+Vakitler hazırlanıyor…
