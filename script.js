@@ -5,27 +5,36 @@ const SETTINGS = {
 
   /*
     AlAdhan method 13:
-    Diyanet İşleri Başkanlığı, Turkey.
-    school: 1 ise ikindi vakti için Hanefi hesap kullanılır.
+    Diyanet İşleri Başkanlığı, Turkey
   */
   method: 13,
-  school: 1,
 
-  warningMinutes: 10
+  /*
+    Son kaç dakika kala dikkat modu açılsın?
+  */
+  warningMinutes: 5,
+
+  /*
+    Sinyal sesi açık mı?
+  */
+  soundEnabled: true
 };
 
 const PRAYERS = [
-  { key: "Fajr", name: "İMSAK" },
-  { key: "Sunrise", name: "GÜNEŞ" },
-  { key: "Dhuhr", name: "ÖĞLE" },
-  { key: "Asr", name: "İKİNDİ" },
-  { key: "Maghrib", name: "AKŞAM" },
-  { key: "Isha", name: "YATSI" }
+  { key: "Fajr", label: "İMSAK", name: "İMSAK" },
+  { key: "Sunrise", label: "GÜNEŞ", name: "GÜNEŞ" },
+  { key: "Dhuhr", label: "ÖĞLE", name: "ÖĞLE" },
+  { key: "Asr", label: "İKİNDİ", name: "İKİNDİ" },
+  { key: "Maghrib", label: "AKŞAM", name: "AKŞAM" },
+  { key: "Isha", label: "YATSI", name: "YATSI" }
 ];
 
 let prayerTimes = {};
 let nextPrayer = null;
-let loading = false;
+
+let audioContext = null;
+let audioUnlocked = false;
+let lastBeepKey = null;
 
 const el = {
   cityName: document.getElementById("cityName"),
@@ -109,7 +118,11 @@ function findNextPrayer() {
     const date = timeToDate(time);
 
     if (date > now) {
-      return { ...prayer, time, date };
+      return {
+        ...prayer,
+        time,
+        date
+      };
     }
   }
 
@@ -132,6 +145,63 @@ function renderTimes() {
   el.timeIsha.textContent = cleanTime(prayerTimes.Isha);
 }
 
+/*
+  Tarayıcılar genelde kullanıcı tıklamadan ses çalmaya izin vermez.
+  Bu yüzden sayfa açıldıktan sonra ekrana bir kere tıklayınca ses sistemi hazırlanır.
+*/
+function unlockAudio() {
+  if (!SETTINGS.soundEnabled || audioUnlocked) return;
+
+  try {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.02);
+
+    audioUnlocked = true;
+    el.statusText.textContent = "Ses aktif. Vakitler güncel.";
+  } catch (error) {
+    console.warn("Ses başlatılamadı:", error);
+  }
+}
+
+/*
+  Kısa, rahatsız etmeyen sinyal sesi.
+*/
+function playShortBeep() {
+  if (!SETTINGS.soundEnabled || !audioUnlocked || !audioContext) return;
+
+  const now = audioContext.currentTime;
+
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(880, now);
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.08, now + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+
+  oscillator.start(now);
+  oscillator.stop(now + 0.5);
+}
+
+function getBeepKey(prayer) {
+  const today = new Date().toISOString().slice(0, 10);
+  return `${today}-${prayer.key}-${prayer.time}`;
+}
+
 function updateScreen() {
   const now = new Date();
 
@@ -151,32 +221,42 @@ function updateScreen() {
 
   setActiveCard(nextPrayer.key);
 
-  if (diffMinutes <= SETTINGS.warningMinutes) {
+  /*
+    Son 5 dakika kırmızı dikkat modu.
+    Vakit girene kadar aktif kalır.
+  */
+  if (diffMinutes <= SETTINGS.warningMinutes && diff > 0) {
     document.body.classList.add("warning");
-    el.statusText.textContent = "Son 10 dakika: dikkat modu aktif.";
+
+    const beepKey = getBeepKey(nextPrayer);
+
+    if (lastBeepKey !== beepKey) {
+      playShortBeep();
+      lastBeepKey = beepKey;
+    }
+
+    el.statusText.textContent = `Son ${SETTINGS.warningMinutes} dakika: dikkat modu aktif.`;
   } else {
     document.body.classList.remove("warning");
-    el.statusText.textContent = "Vakitler güncel.";
+    el.statusText.textContent = audioUnlocked
+      ? "Vakitler güncel."
+      : "Ses için ekrana bir kere tıklayın.";
   }
 
-  if (diff <= 0 && !loading) {
+  if (diff <= 0) {
     loadPrayerTimes();
   }
 }
 
 async function loadPrayerTimes() {
-  if (loading) return;
-
   try {
-    loading = true;
     el.statusText.textContent = "Vakitler yükleniyor...";
 
     const url =
       `https://api.aladhan.com/v1/timingsByCity` +
       `?city=${encodeURIComponent(SETTINGS.apiCity)}` +
       `&country=${encodeURIComponent(SETTINGS.apiCountry)}` +
-      `&method=${SETTINGS.method}` +
-      `&school=${SETTINGS.school}`;
+      `&method=${SETTINGS.method}`;
 
     const response = await fetch(url);
 
@@ -185,17 +265,19 @@ async function loadPrayerTimes() {
     }
 
     const result = await response.json();
+
     prayerTimes = result.data.timings;
 
     renderTimes();
     updateScreen();
 
-    el.statusText.textContent = "Vakitler güncel.";
+    el.statusText.textContent = audioUnlocked
+      ? "Vakitler güncel."
+      : "Ses için ekrana bir kere tıklayın.";
   } catch (error) {
     console.error(error);
 
-    el.statusText.textContent =
-      "Vakitler alınamadı. İnternet veya API bağlantısını kontrol et.";
+    el.statusText.textContent = "Vakitler alınamadı. İnternet veya API bağlantısını kontrol et.";
 
     prayerTimes = {
       Fajr: "03:30",
@@ -208,22 +290,21 @@ async function loadPrayerTimes() {
 
     renderTimes();
     updateScreen();
-  } finally {
-    loading = false;
   }
 }
 
 function init() {
   el.cityName.textContent = SETTINGS.cityName;
 
+  document.addEventListener("click", unlockAudio, { once: true });
+  document.addEventListener("touchstart", unlockAudio, { once: true });
+
   loadPrayerTimes();
-  updateScreen();
 
   setInterval(updateScreen, 1000);
 
   /*
-    Gün içinde API tarafında güncelleme veya tarih değişimi olursa
-    ekran kendini yenilesin diye 30 dakikada bir tekrar çeker.
+    Gün değişimlerinde vakitleri tazelemek için.
   */
   setInterval(loadPrayerTimes, 1000 * 60 * 30);
 }
