@@ -10,12 +10,12 @@ const SETTINGS = {
   method: 13,
 
   /*
-    Son kaç dakika kala dikkat modu açılsın?
+    Son kaç dakika kala kırmızı dikkat modu açılsın?
   */
   warningMinutes: 5,
 
   /*
-    Sinyal sesi açık mı?
+    Son 5 dakika kala kısa sinyal sesi.
   */
   soundEnabled: true
 };
@@ -41,7 +41,6 @@ const el = {
   todayText: document.getElementById("todayText"),
   clockText: document.getElementById("clockText"),
   nextPrayerName: document.getElementById("nextPrayerName"),
-  nextPrayerTime: document.getElementById("nextPrayerTime"),
   countdownText: document.getElementById("countdownText"),
   statusText: document.getElementById("statusText"),
 
@@ -146,8 +145,8 @@ function renderTimes() {
 }
 
 /*
-  Tarayıcılar genelde kullanıcı tıklamadan ses çalmaya izin vermez.
-  Bu yüzden sayfa açıldıktan sonra ekrana bir kere tıklayınca ses sistemi hazırlanır.
+  Tarayıcılar kullanıcı dokunmadan ses çalmaya izin vermeyebilir.
+  Bu yüzden sayfa açılınca ekrana bir kere tıklamak/dokunmak sesi aktif eder.
 */
 function unlockAudio() {
   if (!SETTINGS.soundEnabled || audioUnlocked) return;
@@ -167,6 +166,8 @@ function unlockAudio() {
 
     audioUnlocked = true;
     el.statusText.textContent = "Ses aktif. Vakitler güncel.";
+
+    updateScreen();
   } catch (error) {
     console.warn("Ses başlatılamadı:", error);
   }
@@ -176,7 +177,7 @@ function unlockAudio() {
   Kısa, rahatsız etmeyen sinyal sesi.
 */
 function playShortBeep() {
-  if (!SETTINGS.soundEnabled || !audioUnlocked || !audioContext) return;
+  if (!SETTINGS.soundEnabled || !audioUnlocked || !audioContext) return false;
 
   const now = audioContext.currentTime;
 
@@ -187,14 +188,16 @@ function playShortBeep() {
   oscillator.frequency.setValueAtTime(880, now);
 
   gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.08, now + 0.03);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+  gain.gain.exponentialRampToValueAtTime(0.075, now + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
 
   oscillator.connect(gain);
   gain.connect(audioContext.destination);
 
   oscillator.start(now);
-  oscillator.stop(now + 0.5);
+  oscillator.stop(now + 0.45);
+
+  return true;
 }
 
 function getBeepKey(prayer) {
@@ -216,7 +219,6 @@ function updateScreen() {
   const diffMinutes = diff / 1000 / 60;
 
   el.nextPrayerName.textContent = nextPrayer.name;
-  el.nextPrayerTime.textContent = nextPrayer.time;
   el.countdownText.textContent = formatCountdown(diff);
 
   setActiveCard(nextPrayer.key);
@@ -231,20 +233,20 @@ function updateScreen() {
     const beepKey = getBeepKey(nextPrayer);
 
     if (lastBeepKey !== beepKey) {
-      playShortBeep();
-      lastBeepKey = beepKey;
+      const played = playShortBeep();
+
+      if (played) {
+        lastBeepKey = beepKey;
+      }
     }
 
     el.statusText.textContent = `Son ${SETTINGS.warningMinutes} dakika: dikkat modu aktif.`;
   } else {
     document.body.classList.remove("warning");
+
     el.statusText.textContent = audioUnlocked
       ? "Vakitler güncel."
       : "Ses için ekrana bir kere tıklayın.";
-  }
-
-  if (diff <= 0) {
-    loadPrayerTimes();
   }
 }
 
@@ -279,6 +281,9 @@ async function loadPrayerTimes() {
 
     el.statusText.textContent = "Vakitler alınamadı. İnternet veya API bağlantısını kontrol et.";
 
+    /*
+      API çalışmazsa ekran boş kalmasın diye yedek değerler.
+    */
     prayerTimes = {
       Fajr: "03:30",
       Sunrise: "05:15",
@@ -304,7 +309,7 @@ function init() {
   setInterval(updateScreen, 1000);
 
   /*
-    Gün değişimlerinde vakitleri tazelemek için.
+    Gün değişimi / API yenileme için.
   */
   setInterval(loadPrayerTimes, 1000 * 60 * 30);
 }
