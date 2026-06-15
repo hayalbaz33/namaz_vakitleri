@@ -382,10 +382,34 @@ footer {
 /* son 10 dakika dikkat modu */
 body.warning .screen {
   background:
-    radial-gradient(circle at 50% 42%, rgba(180, 20, 20, 0.24), transparent 35%),
-    linear-gradient(180deg, #080203 0%, #030101 58%, #000 100%);
+    radial-gradient(circle at 50% 42%, rgba(255, 40, 40, 0.30), transparent 36%),
+    radial-gradient(circle at 50% 50%, rgba(150, 0, 0, 0.20), transparent 54%),
+    linear-gradient(180deg, #120204 0%, #070101 58%, #000 100%);
 }
 
+body.warning .vignette {
+  background:
+    radial-gradient(circle at center, transparent 34%, rgba(45,0,0,.58) 72%, rgba(0,0,0,.96) 100%);
+}
+
+body.warning .countdownBox {
+  border-color: rgba(255, 70, 70, .90);
+  box-shadow:
+    0 0 80px rgba(255, 30, 30, .28),
+    inset 0 0 32px rgba(255, 60, 60, .08);
+}
+
+body.warning .countdownBox::after {
+  background: var(--danger);
+  box-shadow: 0 0 22px var(--danger);
+}
+
+body.warning .timeCard.active {
+  border-color: rgba(255, 70, 70, .88);
+  box-shadow:
+    0 0 38px rgba(255, 40, 40, .20),
+    inset 0 0 28px rgba(255, 40, 40, .05);
+}
 body.warning .countdownBox {
   border-color: rgba(255, 70, 70, .85);
   box-shadow:
