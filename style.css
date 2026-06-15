@@ -245,19 +245,18 @@ h1 {
   box-shadow: 0 0 18px var(--gold);
 }
 
-/* Büyük sayaç eski görünüme döndü, ama alanı sabit kaldı */
 #countdownText {
   display: block;
-  width: 8.6ch;
-  min-width: 8.6ch;
-  max-width: 8.6ch;
+  width: 8.8ch;
+  min-width: 8.8ch;
+  max-width: 8.8ch;
   text-align: center;
 
   font-family: "Inter", Arial, sans-serif;
   font-size: clamp(76px, 7.8vw, 124px);
   font-weight: 300;
   line-height: 1;
-  letter-spacing: .12em;
+  letter-spacing: .11em;
 
   color: rgba(255,255,255,.94);
   text-shadow: 0 0 34px rgba(255,255,255,.18);
@@ -308,7 +307,7 @@ h1 {
   letter-spacing: 13px;
 }
 
-/* alt kartlar: kesilmeyen, daha premium ve daha okunaklı */
+/* alt kartlar */
 .cards {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -380,7 +379,7 @@ footer {
   font-size: 15px;
 }
 
-/* Son 10 dakika dikkat modu */
+/* son 10 dakika dikkat modu */
 body.warning .screen {
   background:
     radial-gradient(circle at 50% 42%, rgba(180, 20, 20, 0.24), transparent 35%),
@@ -447,7 +446,7 @@ body.warning .timeCard.active {
     min-height: 100svh;
     height: auto;
     overflow: hidden;
-    padding-bottom: 42px;
+    padding-bottom: 46px;
   }
 
   .topbar {
@@ -478,9 +477,11 @@ body.warning .timeCard.active {
 
   .hero {
     position: relative;
-    height: 555px;
+    height: 650px;
     inset: auto;
     margin-top: 10px;
+    display: grid;
+    place-items: center;
   }
 
   .planet {
@@ -491,7 +492,7 @@ body.warning .timeCard.active {
 
   .heroContent {
     width: calc(100% - 32px);
-    margin-top: 38px;
+    margin-top: 42px;
   }
 
   .smallTitle {
@@ -511,17 +512,22 @@ body.warning .timeCard.active {
     max-width: 520px;
     height: 105px;
     margin-top: 28px;
+    margin-bottom: 24px;
     padding: 0 18px;
   }
 
   #countdownText {
     font-size: 58px;
     letter-spacing: .08em;
+    width: 8.8ch;
+    min-width: 8.8ch;
+    max-width: 8.8ch;
   }
 
   .nextTime {
     font-size: 17px;
     letter-spacing: 5px;
+    margin-bottom: 0;
   }
 
   .times {
@@ -531,7 +537,7 @@ body.warning .timeCard.active {
     bottom: auto;
     z-index: 5;
     width: calc(100% - 32px);
-    margin: -14px auto 0;
+    margin: 18px auto 0;
   }
 
   .sectionTitle {
@@ -581,6 +587,7 @@ body.warning .timeCard.active {
 
   .city {
     font-size: 34px;
+    letter-spacing: -1px;
   }
 
   .clock {
@@ -588,7 +595,8 @@ body.warning .timeCard.active {
   }
 
   .hero {
-    height: 500px;
+    height: 560px;
+    margin-top: 6px;
   }
 
   .planet {
@@ -597,9 +605,15 @@ body.warning .timeCard.active {
     max-width: 170vw;
   }
 
+  .heroContent {
+    width: calc(100% - 24px);
+    margin-top: 34px;
+  }
+
   .smallTitle {
     font-size: 12px;
     letter-spacing: 7px;
+    margin-bottom: 16px;
   }
 
   h1 {
@@ -612,11 +626,17 @@ body.warning .timeCard.active {
     height: 92px;
     max-width: 360px;
     border-radius: 7px;
+    margin-top: 24px;
+    margin-bottom: 22px;
+    padding: 0 12px;
   }
 
   #countdownText {
     font-size: 42px;
     letter-spacing: .06em;
+    width: 8.8ch;
+    min-width: 8.8ch;
+    max-width: 8.8ch;
   }
 
   .nextTime {
@@ -626,7 +646,16 @@ body.warning .timeCard.active {
 
   .times {
     width: calc(100% - 24px);
-    margin-top: -8px;
+    margin-top: 20px;
+  }
+
+  .sectionTitle {
+    gap: 10px;
+  }
+
+  .sectionTitle p {
+    font-size: 11px;
+    letter-spacing: 4px;
   }
 
   .cards {
@@ -637,6 +666,11 @@ body.warning .timeCard.active {
   .timeCard {
     height: 98px;
     padding: 14px 15px;
+  }
+
+  .timeCard div {
+    font-size: 11px;
+    letter-spacing: 4px;
   }
 
   .timeCard strong {
