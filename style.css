@@ -805,3 +805,70 @@ body.warning .timeCard.active {
     margin-top: 60px !important;
   }
 }
+
+
+
+/* =========================================================
+   iPAD SAFARI ÖZEL DÜZELTME
+   Ana sayaç ile BUGÜNÜN VAKİTLERİ arasını ciddi açar
+   ========================================================= */
+
+@supports (-webkit-touch-callout: none) {
+  @media (min-width: 700px) and (max-width: 1200px) {
+    body {
+      overflow-y: auto !important;
+    }
+
+    .screen {
+      min-width: 0 !important;
+      height: auto !important;
+      min-height: 100svh !important;
+      min-height: -webkit-fill-available !important;
+      overflow: hidden !important;
+      padding-bottom: 80px !important;
+    }
+
+    .hero {
+      position: relative !important;
+      inset: auto !important;
+      height: 720px !important;
+      margin-top: 0 !important;
+      display: grid !important;
+      place-items: center !important;
+    }
+
+    .heroContent {
+      margin-top: 42px !important;
+    }
+
+    .countdownBox {
+      margin-bottom: 0 !important;
+    }
+
+    .times {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      width: calc(100% - 72px) !important;
+
+      /* ASIL BOŞLUK */
+      margin: 140px auto 0 !important;
+    }
+
+    .cards {
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 14px !important;
+    }
+
+    .timeCard {
+      height: 118px !important;
+    }
+
+    footer {
+      position: relative !important;
+      bottom: auto !important;
+      margin-top: 34px !important;
+    }
+  }
+}
