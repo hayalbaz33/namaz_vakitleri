@@ -32,9 +32,11 @@ const PRAYERS = [
 let prayerTimes = {};
 let nextPrayer = null;
 
-let audioContext = null;
+const alertAudio = new Audio("sound/alert.mp3");
+alertAudio.preload = "auto";
+
 let audioUnlocked = false;
-let lastBeepKey = null;
+let lastAlertKey = null;
 
 const el = {
   cityName: document.getElementById("cityName"),
@@ -151,56 +153,39 @@ function renderTimes() {
 function unlockAudio() {
   if (!SETTINGS.soundEnabled || audioUnlocked) return;
 
-  try {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  alertAudio.muted = true;
 
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
-
-    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.02);
-
-    audioUnlocked = true;
-    el.statusText.textContent = "Ses aktif. Vakitler güncel.";
-
-    updateScreen();
-  } catch (error) {
-    console.warn("Ses başlatılamadı:", error);
-  }
+  alertAudio.play()
+    .then(() => {
+      alertAudio.pause();
+      alertAudio.currentTime = 0;
+      alertAudio.muted = false;
+      audioUnlocked = true;
+      el.statusText.textContent = "Ses aktif. Vakitler güncel.";
+      updateScreen();
+    })
+    .catch(error => {
+      alertAudio.muted = false;
+      console.warn("Ses başlatılamadı:", error);
+    });
 }
 
 /*
-  Kısa, rahatsız etmeyen sinyal sesi.
+  Son 5 dakika uyarı sesi.
 */
-function playShortBeep() {
-  if (!SETTINGS.soundEnabled || !audioUnlocked || !audioContext) return false;
+function playAlertSound() {
+  if (!SETTINGS.soundEnabled || !audioUnlocked) return false;
 
-  const now = audioContext.currentTime;
-
-  const oscillator = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-
-  oscillator.type = "sine";
-  oscillator.frequency.setValueAtTime(880, now);
-
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.075, now + 0.03);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
-
-  oscillator.connect(gain);
-  gain.connect(audioContext.destination);
-
-  oscillator.start(now);
-  oscillator.stop(now + 0.45);
+  alertAudio.currentTime = 0;
+  alertAudio.play().catch(error => {
+    console.warn("Uyarı sesi çalınamadı:", error);
+    lastAlertKey = null;
+  });
 
   return true;
 }
 
-function getBeepKey(prayer) {
+function getAlertKey(prayer) {
   const today = new Date().toISOString().slice(0, 10);
   return `${today}-${prayer.key}-${prayer.time}`;
 }
@@ -230,13 +215,13 @@ function updateScreen() {
   if (diffMinutes <= SETTINGS.warningMinutes && diff > 0) {
     document.body.classList.add("warning");
 
-    const beepKey = getBeepKey(nextPrayer);
+    const alertKey = getAlertKey(nextPrayer);
 
-    if (lastBeepKey !== beepKey) {
-      const played = playShortBeep();
+    if (lastAlertKey !== alertKey) {
+      const played = playAlertSound();
 
       if (played) {
-        lastBeepKey = beepKey;
+        lastAlertKey = alertKey;
       }
     }
 

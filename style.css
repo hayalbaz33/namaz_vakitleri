@@ -810,7 +810,7 @@ body.warning .timeCard.active {
 
 /* =========================================================
    iPAD SAFARI ÖZEL DÜZELTME
-   Ana sayaç ile BUGÜNÜN VAKİTLERİ arasını ciddi açar
+   Ana sayaç ile BUGÜNÜN VAKİTLERİ arasını dengeler
    ========================================================= */
 
 @supports (-webkit-touch-callout: none) {
@@ -831,7 +831,7 @@ body.warning .timeCard.active {
     .hero {
       position: relative !important;
       inset: auto !important;
-      height: 720px !important;
+      height: 640px !important;
       margin-top: 0 !important;
       display: grid !important;
       place-items: center !important;
@@ -851,9 +851,7 @@ body.warning .timeCard.active {
       right: auto !important;
       bottom: auto !important;
       width: calc(100% - 72px) !important;
-
-      /* ASIL BOŞLUK */
-      margin: 140px auto 0 !important;
+      margin: 32px auto 0 !important;
     }
 
     .cards {
