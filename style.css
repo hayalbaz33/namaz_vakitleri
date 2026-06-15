@@ -217,7 +217,7 @@ h1 {
 .countdownBox {
   width: 820px;
   height: 150px;
-  margin: 42px auto 18px;
+  margin: 42px auto 0;
   padding: 0 38px;
   border: 1px solid rgba(255,255,255,.38);
   border-radius: 8px;
@@ -264,17 +264,6 @@ h1 {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1;
   white-space: nowrap;
-}
-
-.nextTime {
-  font-size: 25px;
-  color: rgba(255,255,255,.76);
-  letter-spacing: 8px;
-  font-weight: 400;
-}
-
-.nextTime span {
-  color: #fff;
 }
 
 /* alt vakitler */
@@ -379,7 +368,7 @@ footer {
   font-size: 15px;
 }
 
-/* son 10 dakika dikkat modu */
+/* son 5 dakika dikkat modu */
 body.warning .screen {
   background:
     radial-gradient(circle at 50% 42%, rgba(255, 40, 40, 0.30), transparent 36%),
@@ -409,22 +398,6 @@ body.warning .timeCard.active {
   box-shadow:
     0 0 38px rgba(255, 40, 40, .20),
     inset 0 0 28px rgba(255, 40, 40, .05);
-}
-body.warning .countdownBox {
-  border-color: rgba(255, 70, 70, .85);
-  box-shadow:
-    0 0 70px rgba(255, 30, 30, .25),
-    inset 0 0 32px rgba(255, 60, 60, .06);
-}
-
-body.warning .countdownBox::after {
-  background: var(--danger);
-  box-shadow: 0 0 22px var(--danger);
-}
-
-body.warning .timeCard.active {
-  border-color: rgba(255, 70, 70, .82);
-  box-shadow: 0 0 34px rgba(255, 40, 40, .18);
 }
 
 /* orta ekran / küçük laptop */
@@ -501,7 +474,7 @@ body.warning .timeCard.active {
 
   .hero {
     position: relative;
-    height: 650px;
+    height: 610px;
     inset: auto;
     margin-top: 10px;
     display: grid;
@@ -516,7 +489,7 @@ body.warning .timeCard.active {
 
   .heroContent {
     width: calc(100% - 32px);
-    margin-top: 42px;
+    margin-top: 34px;
   }
 
   .smallTitle {
@@ -536,7 +509,7 @@ body.warning .timeCard.active {
     max-width: 520px;
     height: 105px;
     margin-top: 28px;
-    margin-bottom: 24px;
+    margin-bottom: 0;
     padding: 0 18px;
   }
 
@@ -548,12 +521,6 @@ body.warning .timeCard.active {
     max-width: 8.8ch;
   }
 
-  .nextTime {
-    font-size: 17px;
-    letter-spacing: 5px;
-    margin-bottom: 0;
-  }
-
   .times {
     position: relative;
     left: auto;
@@ -561,7 +528,7 @@ body.warning .timeCard.active {
     bottom: auto;
     z-index: 5;
     width: calc(100% - 32px);
-    margin: 18px auto 0;
+    margin: 28px auto 0;
   }
 
   .sectionTitle {
@@ -619,7 +586,7 @@ body.warning .timeCard.active {
   }
 
   .hero {
-    height: 560px;
+    height: 535px;
     margin-top: 6px;
   }
 
@@ -631,7 +598,7 @@ body.warning .timeCard.active {
 
   .heroContent {
     width: calc(100% - 24px);
-    margin-top: 34px;
+    margin-top: 28px;
   }
 
   .smallTitle {
@@ -651,7 +618,7 @@ body.warning .timeCard.active {
     max-width: 360px;
     border-radius: 7px;
     margin-top: 24px;
-    margin-bottom: 22px;
+    margin-bottom: 0;
     padding: 0 12px;
   }
 
@@ -663,14 +630,9 @@ body.warning .timeCard.active {
     max-width: 8.8ch;
   }
 
-  .nextTime {
-    font-size: 14px;
-    letter-spacing: 3px;
-  }
-
   .times {
     width: calc(100% - 24px);
-    margin-top: 20px;
+    margin-top: 24px;
   }
 
   .sectionTitle {
