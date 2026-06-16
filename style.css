@@ -192,7 +192,7 @@ body {
   mix-blend-mode: screen;
   opacity: .42;
 }
-
+`r`n
 .planet::after {
   content: "";
   position: absolute;
@@ -393,6 +393,69 @@ footer {
   font-size: 15px;
 }
 
+
+.warningVideoLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  overflow: hidden;
+  transition:
+    opacity 900ms ease,
+    visibility 900ms ease;
+}
+
+.warningVideoLayer.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.warningVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  filter:
+    contrast(1.08)
+    brightness(0.72)
+    saturate(1.12);
+  transition:
+    opacity 700ms ease,
+    visibility 700ms ease;
+}
+
+.warningVideoLayer.impact-playing .warningImpactVideo {
+  opacity: 0.82;
+  visibility: visible;
+}
+
+.warningVideoLayer.loop-playing .warningLoopVideo {
+  opacity: 0.78;
+  visibility: visible;
+}
+
+body.warning .planet {
+  opacity: 0.18;
+  filter: contrast(1.1) brightness(0.38) saturate(0.8);
+}
+
+body.warning .stars {
+  opacity: 0.22;
+}
+
+body.warning .heroContent,
+body.warning .topbar,
+body.warning .times,
+body.warning footer {
+  position: relative;
+  z-index: 6;
+}
 /* son 5 dakika dikkat modu */
 body.warning .screen {
   animation: warningScreenPulse 2.2s ease-in-out infinite;
@@ -929,4 +992,132 @@ body.warning .timeCard.active {
   }
 }
 
+/* GitHub Pages / iPad Safari final overrides */
+.stars,
+.noise,
+.vignette,
+.planet,
+.planet::before,`r`n`r`n
+.screen,
+.topbar,
+.heroContent,
+.times,
+footer {
+  pointer-events: auto !important;
+}
 
+@supports (-webkit-touch-callout: none) {
+  @media (min-width: 700px) and (max-width: 1200px) {
+    body {
+      overflow-y: auto !important;
+    }
+
+    .screen {
+      min-width: 0 !important;
+      height: auto !important;
+      min-height: 100svh !important;
+      min-height: -webkit-fill-available !important;
+      overflow: hidden !important;
+      padding-bottom: 90px !important;
+    }
+
+    .topbar {
+      height: auto !important;
+      padding: 34px 42px 0 !important;
+    }
+
+    .city {
+      font-size: 52px !important;
+      letter-spacing: -2px !important;
+    }
+
+    .clockBox {
+      min-width: 285px !important;
+      padding: 18px 24px !important;
+    }
+
+    .clock {
+      font-size: 46px !important;
+    }
+
+    .hero {
+      position: relative !important;
+      inset: auto !important;
+      height: 760px !important;
+      margin-top: 0 !important;
+      display: grid !important;
+      place-items: center !important;
+    }
+
+    .planet {
+      top: 10px !important;
+      width: 880px !important;
+      max-width: 118vw !important;
+      pointer-events: none !important;
+    }
+
+    .heroContent {
+      width: min(820px, calc(100% - 64px)) !important;
+      margin-top: 36px !important;
+    }
+
+    .smallTitle {
+      font-size: 16px !important;
+      letter-spacing: 12px !important;
+      margin-bottom: 20px !important;
+    }
+
+    h1 {
+      font-size: 72px !important;
+      letter-spacing: .30em !important;
+      text-indent: .30em !important;
+    }
+
+    .countdownBox {
+      width: 640px !important;
+      max-width: calc(100vw - 120px) !important;
+      height: 120px !important;
+      margin-top: 34px !important;
+      margin-bottom: 0 !important;
+    }
+
+    #countdownText {
+      font-size: 72px !important;
+      letter-spacing: .08em !important;
+    }
+
+    .times {
+      position: relative !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      width: calc(100% - 84px) !important;
+      margin: 160px auto 0 !important;
+    }
+
+    .sectionTitle {
+      margin-bottom: 22px !important;
+    }
+
+    .cards {
+      grid-template-columns: repeat(3, 1fr) !important;
+      gap: 14px !important;
+    }
+
+    .timeCard {
+      height: 118px !important;
+      padding: 18px 22px 16px !important;
+    }
+
+    .timeCard strong {
+      font-size: 38px !important;
+    }
+
+    footer {
+      position: relative !important;
+      bottom: auto !important;
+      margin-top: 34px !important;
+      padding-bottom: 24px !important;
+    }
+  }
+}

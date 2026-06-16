@@ -17,12 +17,7 @@ const SETTINGS = {
   /*
     Son 5 dakika kala kısa sinyal sesi.
   */
-  soundEnabled: true,
-
-  /*
-    Alarm bittikten kaç saniye sonra tekrar başlasın?
-  */
-  alertRepeatSeconds: 10
+  soundEnabled: true
 };
 
 const PRAYERS = [
@@ -36,14 +31,8 @@ const PRAYERS = [
 
 let prayerTimes = {};
 let nextPrayer = null;
-
-const alertAudio = new Audio("sound/alert.mp3");
-alertAudio.preload = "auto";
-
 let audioUnlocked = false;
-let lastAlertKey = null;
-let alertRepeatTimeout = null;
-let alertPlaying = false;
+let lastBeepKey = null;
 
 const el = {
   cityName: document.getElementById("cityName"),
@@ -52,6 +41,7 @@ const el = {
   nextPrayerName: document.getElementById("nextPrayerName"),
   countdownText: document.getElementById("countdownText"),
   statusText: document.getElementById("statusText"),
+  warningSound: document.getElementById("warningSound"),
 
   timeFajr: document.getElementById("timeFajr"),
   timeSunrise: document.getElementById("timeSunrise"),
@@ -158,81 +148,50 @@ function renderTimes() {
   Bu yüzden sayfa açılınca ekrana bir kere tıklamak/dokunmak sesi aktif eder.
 */
 function unlockAudio() {
-  if (!SETTINGS.soundEnabled || audioUnlocked) return;
+  if (!SETTINGS.soundEnabled || audioUnlocked || !el.warningSound) return;
 
-  alertAudio.muted = true;
+  el.warningSound.muted = true;
 
-  alertAudio.play()
+  el.warningSound.play()
     .then(() => {
-      alertAudio.pause();
-      alertAudio.currentTime = 0;
-      alertAudio.muted = false;
+      el.warningSound.pause();
+      el.warningSound.currentTime = 0;
+      el.warningSound.muted = false;
       audioUnlocked = true;
       el.statusText.textContent = "Ses aktif. Vakitler güncel.";
       updateScreen();
     })
     .catch(error => {
-      alertAudio.muted = false;
+      el.warningSound.muted = false;
       console.warn("Ses başlatılamadı:", error);
+      el.statusText.textContent = "Ses için ekrana bir kere dokunun.";
     });
 }
 
 /*
-  Son 5 dakika uyarı sesi.
-  Ses biter, 10 saniye bekler, uyarı modu devam ediyorsa tekrar başlar.
+  Son 5 dakikaya ilk girildiğinde assets/beep.mp3 dosyasını bir kere çalar.
 */
-function clearAlertRepeat() {
-  if (alertRepeatTimeout) {
-    clearTimeout(alertRepeatTimeout);
-    alertRepeatTimeout = null;
-  }
-}
+function playShortBeep() {
+  if (!SETTINGS.soundEnabled || !audioUnlocked || !el.warningSound) return false;
 
-function stopAlertSound() {
-  clearAlertRepeat();
-  alertPlaying = false;
-  lastAlertKey = null;
-  alertAudio.pause();
-  alertAudio.currentTime = 0;
-}
-
-function scheduleNextAlert(alertKey) {
-  clearAlertRepeat();
-
-  alertRepeatTimeout = setTimeout(() => {
-    alertRepeatTimeout = null;
-
-    if (document.body.classList.contains("warning") && lastAlertKey === alertKey) {
-      playAlertSound(alertKey);
-    }
-  }, SETTINGS.alertRepeatSeconds * 1000);
-}
-
-function playAlertSound(alertKey) {
-  if (!SETTINGS.soundEnabled || !audioUnlocked || alertPlaying) return false;
-
-  alertPlaying = true;
-  alertAudio.currentTime = 0;
-
-  alertAudio.play().catch(error => {
+  el.warningSound.currentTime = 0;
+  el.warningSound.play().catch(error => {
     console.warn("Uyarı sesi çalınamadı:", error);
-    alertPlaying = false;
-    lastAlertKey = null;
-    clearAlertRepeat();
+    lastBeepKey = null;
+    el.statusText.textContent = "Ses için ekrana bir kere dokunun.";
   });
 
   return true;
 }
 
-alertAudio.addEventListener("ended", () => {
-  alertPlaying = false;
-
-  if (lastAlertKey && document.body.classList.contains("warning")) {
-    scheduleNextAlert(lastAlertKey);
+function stopAlertSound() {
+  if (el.warningSound) {
+    el.warningSound.pause();
+    el.warningSound.currentTime = 0;
   }
-});
+}
 
-function getAlertKey(prayer) {
+function getBeepKey(prayer) {
   const today = new Date().toISOString().slice(0, 10);
   return `${today}-${prayer.key}-${prayer.time}`;
 }
@@ -264,16 +223,16 @@ function updateScreen() {
   if (diffMinutes <= SETTINGS.warningMinutes && diff > 0) {
     document.body.classList.add("warning");
 
-    const alertKey = getAlertKey(nextPrayer);
+    const beepKey = getBeepKey(nextPrayer);
 
-    if (lastAlertKey !== alertKey) {
-      stopAlertSound();
-      lastAlertKey = alertKey;
+    if (lastBeepKey !== beepKey) {
+      const played = playShortBeep();
 
-      const played = playAlertSound(alertKey);
-
-      if (!played) {
-        lastAlertKey = null;
+      if (played) {
+        lastBeepKey = beepKey;
+      } else {
+        el.statusText.textContent = "Ses için ekrana bir kere dokunun.";
+        return;
       }
     }
 
@@ -282,11 +241,9 @@ function updateScreen() {
     document.body.classList.remove("warning");
     stopAlertSound();
 
-    if (!window.PRAYER_TEST_MODE?.active) {
-      el.statusText.textContent = audioUnlocked
-        ? "Vakitler güncel."
-        : "Ses için ekrana bir kere tıklayın.";
-    }
+    el.statusText.textContent = audioUnlocked
+      ? "Vakitler güncel."
+      : "Ses için ekrana bir kere dokunun.";
   }
 }
 
@@ -318,7 +275,7 @@ async function loadPrayerTimes() {
     if (!window.PRAYER_TEST_MODE?.active) {
       el.statusText.textContent = audioUnlocked
         ? "Vakitler güncel."
-        : "Ses için ekrana bir kere tıklayın.";
+        : "Ses için ekrana bir kere dokunun.";
     }
   } catch (error) {
     console.error(error);
@@ -349,6 +306,7 @@ function init() {
 
   document.addEventListener("click", unlockAudio, { once: true });
   document.addEventListener("touchstart", unlockAudio, { once: true });
+  document.addEventListener("pointerdown", unlockAudio, { once: true });
 
   loadPrayerTimes();
 
@@ -361,7 +319,3 @@ function init() {
 }
 
 init();
-
-
-
-

@@ -6,7 +6,7 @@
 
   <title>Namaz Vakti TV</title>
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style.css?v=31" />
 </head>
 
 <body>
@@ -14,6 +14,27 @@
     <div class="stars"></div>
     <div class="noise"></div>
     <div class="vignette"></div>
+    
+    <div class="warningVideoLayer" id="warningVideoLayer" aria-hidden="true">
+      <video
+        id="impactVideo"
+        class="warningVideo warningImpactVideo"
+        src="./assets/warning-impact.mp4"
+        preload="auto"
+        muted
+        playsinline
+      ></video>
+
+      <video
+        id="loopVideo"
+        class="warningVideo warningLoopVideo"
+        src="./assets/warning-loop.mp4"
+        preload="auto"
+        muted
+        playsinline
+        loop
+      ></video>
+    </div>
     <button class="testModeButton" id="testModeButton" type="button">Test 05:30</button>
 
     <section class="topbar">
@@ -83,7 +104,8 @@
     </footer>
   </main>
 
-  <script src="script.js"></script>
-  <script src="test-mode.js"></script>
+  <audio id="warningSound" src="./assets/beep.mp3" preload="auto"></audio>
+  <script src="./script.js?v=31"></script>
+  <script src="./test-mode.js?v=31"></script>
 </body>
 </html>
