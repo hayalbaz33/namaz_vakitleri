@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   --white: #f4f4f4;
@@ -77,6 +77,31 @@ body {
     radial-gradient(circle at center, transparent 38%, rgba(0,0,0,.54) 76%, rgba(0,0,0,.96) 100%);
 }
 
+
+.testModeButton {
+  position: fixed;
+  z-index: 30;
+  right: 28px;
+  bottom: 26px;
+  min-width: 138px;
+  padding: 13px 18px;
+  border: 1px solid rgba(214, 177, 106, .64);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .48);
+  color: rgba(255, 255, 255, .88);
+  font: 700 13px/1 "Inter", Arial, sans-serif;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 22px rgba(0, 0, 0, .34);
+}
+
+.testModeButton:hover,
+.testModeButton.active {
+  border-color: rgba(255, 70, 70, .92);
+  color: #fff;
+  box-shadow: 0 0 30px rgba(255, 40, 40, .24);
+}
 /* üst alan */
 .topbar {
   position: relative;

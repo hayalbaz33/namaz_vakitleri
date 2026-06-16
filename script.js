@@ -1,4 +1,4 @@
-﻿const SETTINGS = {
+const SETTINGS = {
   cityName: "Mersin Merkez",
   apiCity: "Mersin",
   apiCountry: "Turkey",
@@ -243,6 +243,8 @@ function updateScreen() {
   el.clockText.textContent = formatClock(now);
   el.todayText.textContent = getTurkishDate(now);
 
+  if (window.PRAYER_TEST_MODE?.active) return;
+
   if (!Object.keys(prayerTimes).length) return;
 
   nextPrayer = findNextPrayer();
@@ -280,15 +282,19 @@ function updateScreen() {
     document.body.classList.remove("warning");
     stopAlertSound();
 
-    el.statusText.textContent = audioUnlocked
-      ? "Vakitler güncel."
-      : "Ses için ekrana bir kere tıklayın.";
+    if (!window.PRAYER_TEST_MODE?.active) {
+      el.statusText.textContent = audioUnlocked
+        ? "Vakitler güncel."
+        : "Ses için ekrana bir kere tıklayın.";
+    }
   }
 }
 
 async function loadPrayerTimes() {
   try {
-    el.statusText.textContent = "Vakitler yükleniyor...";
+    if (!window.PRAYER_TEST_MODE?.active) {
+      el.statusText.textContent = "Vakitler yükleniyor...";
+    }
 
     const url =
       `https://api.aladhan.com/v1/timingsByCity` +
@@ -309,13 +315,17 @@ async function loadPrayerTimes() {
     renderTimes();
     updateScreen();
 
-    el.statusText.textContent = audioUnlocked
-      ? "Vakitler güncel."
-      : "Ses için ekrana bir kere tıklayın.";
+    if (!window.PRAYER_TEST_MODE?.active) {
+      el.statusText.textContent = audioUnlocked
+        ? "Vakitler güncel."
+        : "Ses için ekrana bir kere tıklayın.";
+    }
   } catch (error) {
     console.error(error);
 
-    el.statusText.textContent = "Vakitler alınamadı. İnternet veya API bağlantısını kontrol et.";
+    if (!window.PRAYER_TEST_MODE?.active) {
+      el.statusText.textContent = "Vakitler alınamadı. İnternet veya API bağlantısını kontrol et.";
+    }
 
     /*
       API çalışmazsa ekran boş kalmasın diye yedek değerler.
