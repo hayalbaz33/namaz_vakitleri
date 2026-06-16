@@ -1,4 +1,4 @@
-const SETTINGS = {
+﻿const SETTINGS = {
   cityName: "Mersin Merkez",
   apiCity: "Mersin",
   apiCountry: "Turkey",
@@ -17,7 +17,12 @@ const SETTINGS = {
   /*
     Son 5 dakika kala kısa sinyal sesi.
   */
-  soundEnabled: true
+  soundEnabled: true,
+
+  /*
+    Alarm bittikten kaç saniye sonra tekrar başlasın?
+  */
+  alertRepeatSeconds: 10
 };
 
 const PRAYERS = [
@@ -37,6 +42,8 @@ alertAudio.preload = "auto";
 
 let audioUnlocked = false;
 let lastAlertKey = null;
+let alertRepeatTimeout = null;
+let alertPlaying = false;
 
 const el = {
   cityName: document.getElementById("cityName"),
@@ -172,18 +179,58 @@ function unlockAudio() {
 
 /*
   Son 5 dakika uyarı sesi.
+  Ses biter, 10 saniye bekler, uyarı modu devam ediyorsa tekrar başlar.
 */
-function playAlertSound() {
-  if (!SETTINGS.soundEnabled || !audioUnlocked) return false;
+function clearAlertRepeat() {
+  if (alertRepeatTimeout) {
+    clearTimeout(alertRepeatTimeout);
+    alertRepeatTimeout = null;
+  }
+}
 
+function stopAlertSound() {
+  clearAlertRepeat();
+  alertPlaying = false;
+  lastAlertKey = null;
+  alertAudio.pause();
   alertAudio.currentTime = 0;
+}
+
+function scheduleNextAlert(alertKey) {
+  clearAlertRepeat();
+
+  alertRepeatTimeout = setTimeout(() => {
+    alertRepeatTimeout = null;
+
+    if (document.body.classList.contains("warning") && lastAlertKey === alertKey) {
+      playAlertSound(alertKey);
+    }
+  }, SETTINGS.alertRepeatSeconds * 1000);
+}
+
+function playAlertSound(alertKey) {
+  if (!SETTINGS.soundEnabled || !audioUnlocked || alertPlaying) return false;
+
+  alertPlaying = true;
+  alertAudio.currentTime = 0;
+
   alertAudio.play().catch(error => {
     console.warn("Uyarı sesi çalınamadı:", error);
+    alertPlaying = false;
     lastAlertKey = null;
+    clearAlertRepeat();
   });
 
   return true;
 }
+
+alertAudio.addEventListener("ended", () => {
+  alertPlaying = false;
+
+  if (lastAlertKey && document.body.classList.contains("warning")) {
+    scheduleNextAlert(lastAlertKey);
+  }
+});
 
 function getAlertKey(prayer) {
   const today = new Date().toISOString().slice(0, 10);
@@ -218,16 +265,20 @@ function updateScreen() {
     const alertKey = getAlertKey(nextPrayer);
 
     if (lastAlertKey !== alertKey) {
-      const played = playAlertSound();
+      stopAlertSound();
+      lastAlertKey = alertKey;
 
-      if (played) {
-        lastAlertKey = alertKey;
+      const played = playAlertSound(alertKey);
+
+      if (!played) {
+        lastAlertKey = null;
       }
     }
 
     el.statusText.textContent = `Son ${SETTINGS.warningMinutes} dakika: dikkat modu aktif.`;
   } else {
     document.body.classList.remove("warning");
+    stopAlertSound();
 
     el.statusText.textContent = audioUnlocked
       ? "Vakitler güncel."
@@ -300,3 +351,7 @@ function init() {
 }
 
 init();
+
+
+
+

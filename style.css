@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   --white: #f4f4f4;
@@ -370,6 +370,7 @@ footer {
 
 /* son 5 dakika dikkat modu */
 body.warning .screen {
+  animation: warningScreenPulse 2.2s ease-in-out infinite;
   background:
     radial-gradient(circle at 50% 42%, rgba(255, 40, 40, 0.30), transparent 36%),
     radial-gradient(circle at 50% 50%, rgba(150, 0, 0, 0.20), transparent 54%),
@@ -377,11 +378,13 @@ body.warning .screen {
 }
 
 body.warning .vignette {
+  animation: warningVignettePulse 2.2s ease-in-out infinite;
   background:
     radial-gradient(circle at center, transparent 34%, rgba(45,0,0,.58) 72%, rgba(0,0,0,.96) 100%);
 }
 
 body.warning .countdownBox {
+  animation: warningBoxPulse 2.2s ease-in-out infinite;
   border-color: rgba(255, 70, 70, .90);
   box-shadow:
     0 0 80px rgba(255, 30, 30, .28),
@@ -400,6 +403,36 @@ body.warning .timeCard.active {
     inset 0 0 28px rgba(255, 40, 40, .05);
 }
 
+@keyframes warningScreenPulse {
+  0%, 100% {
+    filter: saturate(1) brightness(1);
+  }
+  50% {
+    filter: saturate(1.55) brightness(1.16);
+  }
+}
+
+@keyframes warningVignettePulse {
+  0%, 100% {
+    opacity: .88;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes warningBoxPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 52px rgba(255, 30, 30, .18),
+      inset 0 0 24px rgba(255, 60, 60, .06);
+  }
+  50% {
+    box-shadow:
+      0 0 105px rgba(255, 30, 30, .42),
+      inset 0 0 42px rgba(255, 60, 60, .14);
+  }
+}
 /* orta ekran / küçük laptop */
 @media (max-width: 1300px) {
   .topbar {
@@ -870,3 +903,5 @@ body.warning .timeCard.active {
     }
   }
 }
+
+
