@@ -1,5 +1,5 @@
 (function () {
-  const TEST_TOTAL_SECONDS = 5 * 60 + 30;
+  const TEST_TOTAL_SECONDS = 5 * 60 + 5;
   const TEST_WARNING_SECONDS = SETTINGS.warningMinutes * 60;
   const TEST_BEEP_KEY = "test-warning-beep";
   const TEST_VIDEO_KEY = "test-warning-video";
