@@ -2,15 +2,21 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Namaz Vakti TV" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="manifest" href="./manifest.json" />
 
   <title>Namaz Vakti TV</title>
 
-  <link rel="stylesheet" href="./style.css?v=31" />
+  <link rel="stylesheet" href="./style.css?v=32" />
 </head>
 
-<body>
-  <main class="screen">
+<body class="tv-root">
+  <main class="screen tv-stage" id="appScreen">
     <div class="stars"></div>
     <div class="noise"></div>
     <div class="vignette"></div>
@@ -35,7 +41,9 @@
         loop
       ></video>
     </div>
-    <button class="testModeButton" id="testModeButton" type="button">Test 05:30</button>
+    <button class="testModeButton hide-in-presentation" id="testModeButton" type="button">Test 05:30</button>
+    <button class="presentationModeButton hide-in-presentation" id="presentationModeButton" type="button">TV / Sunum Modu</button>
+    <button class="presentationExitButton" id="presentationExitButton" type="button" aria-label="Sunum modundan çık">Çıkış</button>
 
     <section class="topbar">
       <div class="city" id="cityName">Mersin Merkez</div>
@@ -105,7 +113,7 @@
   </main>
 
   <audio id="warningSound" src="./assets/beep.mp3" preload="auto"></audio>
-  <script src="./script.js?v=31"></script>
-  <script src="./test-mode.js?v=31"></script>
+  <script src="./script.js?v=32"></script>
+  <script src="./test-mode.js?v=32"></script>
 </body>
 </html>

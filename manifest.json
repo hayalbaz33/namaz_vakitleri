@@ -1,0 +1,12 @@
+{
+  "name": "Namaz Vakti TV",
+  "short_name": "Namaz TV",
+  "description": "Namaz vakitleri için TV ve sunum uyumlu ekran.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": []
+}

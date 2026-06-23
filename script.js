@@ -33,6 +33,7 @@ let prayerTimes = {};
 let nextPrayer = null;
 let audioUnlocked = false;
 let lastBeepKey = null;
+let wakeLockSentinel = null;
 
 const el = {
   cityName: document.getElementById("cityName"),
@@ -42,6 +43,9 @@ const el = {
   countdownText: document.getElementById("countdownText"),
   statusText: document.getElementById("statusText"),
   warningSound: document.getElementById("warningSound"),
+  appScreen: document.getElementById("appScreen"),
+  presentationModeButton: document.getElementById("presentationModeButton"),
+  presentationExitButton: document.getElementById("presentationExitButton"),
 
   timeFajr: document.getElementById("timeFajr"),
   timeSunrise: document.getElementById("timeSunrise"),
@@ -301,12 +305,132 @@ async function loadPrayerTimes() {
   }
 }
 
+
+function getFullscreenElement() {
+  return document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.msFullscreenElement ||
+    null;
+}
+
+function requestElementFullscreen(element) {
+  if (!element) return Promise.reject(new Error("Sunum alani bulunamadi."));
+
+  const request = element.requestFullscreen ||
+    element.webkitRequestFullscreen ||
+    element.msRequestFullscreen;
+
+  if (!request) {
+    return Promise.reject(new Error("Fullscreen API desteklenmiyor."));
+  }
+
+  const result = request.call(element);
+  return result instanceof Promise ? result : Promise.resolve();
+}
+
+function exitElementFullscreen() {
+  const exit = document.exitFullscreen ||
+    document.webkitExitFullscreen ||
+    document.msExitFullscreen;
+
+  if (!exit || !getFullscreenElement()) {
+    return Promise.resolve();
+  }
+
+  const result = exit.call(document);
+  return result instanceof Promise ? result : Promise.resolve();
+}
+
+async function requestWakeLock() {
+  if (!("wakeLock" in navigator)) return;
+
+  try {
+    wakeLockSentinel = await navigator.wakeLock.request("screen");
+    wakeLockSentinel.addEventListener("release", () => {
+      wakeLockSentinel = null;
+    });
+  } catch (error) {
+    console.warn("Wake Lock al?namad?:", error);
+  }
+}
+
+async function releaseWakeLock() {
+  if (!wakeLockSentinel) return;
+
+  try {
+    await wakeLockSentinel.release();
+  } catch (error) {
+    console.warn("Wake Lock b?rak?lamad?:", error);
+  } finally {
+    wakeLockSentinel = null;
+  }
+}
+
+function setPresentationMode(active) {
+  document.body.classList.toggle("presentation-mode", active);
+
+  if (el.presentationModeButton) {
+    el.presentationModeButton.textContent = active ? "Sunum Modu Aktif" : "TV / Sunum Modu";
+  }
+}
+
+async function enterPresentationMode() {
+  setPresentationMode(true);
+
+  try {
+    await requestElementFullscreen(el.appScreen || document.documentElement);
+  } catch (error) {
+    console.warn("Fullscreen acilamadi:", error);
+  }
+
+  await requestWakeLock();
+}
+
+async function exitPresentationMode() {
+  setPresentationMode(false);
+  await releaseWakeLock();
+
+  try {
+    await exitElementFullscreen();
+  } catch (error) {
+    console.warn("Fullscreen kapatilamadi:", error);
+  }
+}
+
+function togglePresentationMode() {
+  if (document.body.classList.contains("presentation-mode") || getFullscreenElement()) {
+    exitPresentationMode();
+  } else {
+    enterPresentationMode();
+  }
+}
+
+function syncPresentationMode() {
+  const active = Boolean(getFullscreenElement());
+
+  if (!active && document.body.classList.contains("presentation-mode")) {
+    setPresentationMode(false);
+    releaseWakeLock();
+  }
+}
+
 function init() {
   el.cityName.textContent = SETTINGS.cityName;
 
   document.addEventListener("click", unlockAudio, { once: true });
   document.addEventListener("touchstart", unlockAudio, { once: true });
   document.addEventListener("pointerdown", unlockAudio, { once: true });
+
+  el.presentationModeButton?.addEventListener("click", togglePresentationMode);
+  el.presentationExitButton?.addEventListener("click", exitPresentationMode);
+
+  document.addEventListener("fullscreenchange", syncPresentationMode);
+  document.addEventListener("webkitfullscreenchange", syncPresentationMode);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && document.body.classList.contains("presentation-mode")) {
+      requestWakeLock();
+    }
+  });
 
   loadPrayerTimes();
 
