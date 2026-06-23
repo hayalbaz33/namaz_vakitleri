@@ -360,14 +360,29 @@ async function releaseWakeLock() {
   try {
     await wakeLockSentinel.release();
   } catch (error) {
-    console.warn("Wake Lock b?rak?lamad?:", error);
+    console.warn("Wake Lock birakilamadi:", error);
   } finally {
     wakeLockSentinel = null;
   }
 }
 
+function updatePresentationStageScale() {
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  document.documentElement.style.setProperty("--tv-stage-scale", String(scale));
+}
+
+function resetPresentationStageScale() {
+  document.documentElement.style.removeProperty("--tv-stage-scale");
+}
+
 function setPresentationMode(active) {
   document.body.classList.toggle("presentation-mode", active);
+
+  if (active) {
+    updatePresentationStageScale();
+  } else {
+    resetPresentationStageScale();
+  }
 
   if (el.presentationModeButton) {
     el.presentationModeButton.textContent = active ? "Sunum Modu Aktif" : "TV / Sunum Modu";
@@ -429,8 +444,12 @@ function init() {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible" && document.body.classList.contains("presentation-mode")) {
       requestWakeLock();
+      updatePresentationStageScale();
     }
   });
+
+  window.addEventListener("resize", updatePresentationStageScale);
+  window.addEventListener("orientationchange", updatePresentationStageScale);
 
   loadPrayerTimes();
 

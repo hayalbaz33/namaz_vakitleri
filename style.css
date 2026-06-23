@@ -1170,9 +1170,6 @@ body.presentation-mode {
   min-height: 100vh;
   overflow: hidden !important;
   background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overscroll-behavior: none;
 }
 
@@ -1185,15 +1182,21 @@ body.presentation-mode .presentationExitButton {
 }
 
 body.presentation-mode .tv-stage {
-  width: min(100vw, calc(100vh * 16 / 9)) !important;
-  height: min(100vh, calc(100vw * 9 / 16)) !important;
+  position: fixed !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: 1920px !important;
+  height: 1080px !important;
+  min-width: 1920px !important;
+  min-height: 1080px !important;
+  max-width: none !important;
+  max-height: none !important;
   aspect-ratio: 16 / 9;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  margin: auto !important;
+  margin: 0 !important;
   padding: 0 !important;
   overflow: hidden !important;
-  flex: none;
+  transform: translate(-50%, -50%) scale(var(--tv-stage-scale, 1)) !important;
+  transform-origin: center center !important;
 }
 
 body.presentation-mode .topbar {
@@ -1202,11 +1205,66 @@ body.presentation-mode .topbar {
   display: flex !important;
 }
 
+body.presentation-mode .city {
+  font-size: clamp(44px, 4.3vw, 78px) !important;
+  letter-spacing: -3px !important;
+}
+
+body.presentation-mode .clockBox {
+  min-width: 315px !important;
+  width: auto !important;
+  margin-top: 0 !important;
+  padding: 20px 28px !important;
+}
+
+body.presentation-mode .clock {
+  font-size: 54px !important;
+}
+
 body.presentation-mode .hero {
   position: absolute !important;
   inset: 0 !important;
   height: auto !important;
   margin-top: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+body.presentation-mode .planet {
+  top: 22px !important;
+  left: 50% !important;
+  width: 1180px !important;
+  max-width: none !important;
+}
+
+body.presentation-mode .heroContent {
+  width: 920px !important;
+  margin-top: -46px !important;
+}
+
+body.presentation-mode .smallTitle {
+  font-size: 22px !important;
+  letter-spacing: 17px !important;
+  margin-bottom: 26px !important;
+}
+
+body.presentation-mode h1 {
+  font-size: 146px !important;
+  letter-spacing: .36em !important;
+  text-indent: .36em !important;
+}
+
+body.presentation-mode .countdownBox {
+  width: 820px !important;
+  max-width: none !important;
+  height: 150px !important;
+  margin: 42px auto 0 !important;
+  padding: 0 38px !important;
+}
+
+body.presentation-mode #countdownText {
+  font-size: 124px !important;
+  letter-spacing: .11em !important;
 }
 
 body.presentation-mode .times {
@@ -1216,6 +1274,20 @@ body.presentation-mode .times {
   bottom: 92px !important;
   width: auto !important;
   margin: 0 !important;
+}
+
+body.presentation-mode .cards {
+  grid-template-columns: repeat(6, 1fr) !important;
+  gap: 18px !important;
+}
+
+body.presentation-mode .timeCard {
+  height: 128px !important;
+  padding: 20px 26px 18px !important;
+}
+
+body.presentation-mode .timeCard strong {
+  font-size: 56px !important;
 }
 
 body.presentation-mode footer {
