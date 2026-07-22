@@ -1,7 +1,7 @@
 const SETTINGS = {
   cityName: "Konum belirleniyor...",
   method: 13,
-  school: 1,
+  school: 0,
   warningMinutes: 5,
   soundEnabled: true
 };
@@ -134,6 +134,63 @@ function renderTimes() {
   el.timeIsha.textContent = cleanTime(prayerTimes.Isha);
 }
 
+function clearRenderedTimes() {
+  prayerTimes = {};
+  nextPrayer = null;
+  currentTimingsDateKey = null;
+  lastBeepKey = null;
+  stopWarningVideos();
+  document.body.classList.remove("warning");
+
+  el.timeFajr.textContent = "--:--";
+  el.timeSunrise.textContent = "--:--";
+  el.timeDhuhr.textContent = "--:--";
+  el.timeAsr.textContent = "--:--";
+  el.timeMaghrib.textContent = "--:--";
+  el.timeIsha.textContent = "--:--";
+}
+
+function hasPrayerTimes(times = prayerTimes) {
+  return PRAYERS.every(prayer => Boolean(times[prayer.key]));
+}
+
+function normalizePrayerTimings(timings) {
+  if (!timings) throw new Error("Namaz vakti API cevabı geçersiz.");
+
+  const nextTimings = {};
+  for (const prayer of PRAYERS) {
+    const value = cleanTime(timings[prayer.key]);
+    if (!/^\d{1,2}:\d{2}$/.test(value)) {
+      throw new Error("Namaz vakti API cevabı eksik: " + prayer.key);
+    }
+    nextTimings[prayer.key] = value;
+  }
+
+  return nextTimings;
+}
+
+function getLocationDistanceKm(first, second) {
+  if (!first || !second) return Infinity;
+  if (!Number.isFinite(first.latitude) || !Number.isFinite(first.longitude)) return Infinity;
+  if (!Number.isFinite(second.latitude) || !Number.isFinite(second.longitude)) return Infinity;
+
+  const toRad = value => value * Math.PI / 180;
+  const earthRadiusKm = 6371;
+  const dLat = toRad(second.latitude - first.latitude);
+  const dLon = toRad(second.longitude - first.longitude);
+  const lat1 = toRad(first.latitude);
+  const lat2 = toRad(second.latitude);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function isMeaningfullyDifferentLocation(first, second) {
+  return getLocationDistanceKm(first, second) > 0.5;
+}
+
 function getSavedLocation() {
   try {
     const raw = localStorage.getItem(LOCATION_STORAGE_KEY);
@@ -237,41 +294,50 @@ async function geocodeManualLocation(query) {
 }
 
 async function loadPrayerTimesByCoordinates(latitude, longitude, date = new Date()) {
+  console.log("Vakit koordinatları:", latitude, longitude);
+
   const url =
-    `https://api.aladhan.com/v1/timings/${getApiDate(date)}` +
-    `?latitude=${encodeURIComponent(latitude)}` +
-    `&longitude=${encodeURIComponent(longitude)}` +
-    `&method=${SETTINGS.method}` +
-    `&school=${SETTINGS.school}`;
+    "https://api.aladhan.com/v1/timings/" + getApiDate(date) +
+    "?latitude=" + encodeURIComponent(latitude) +
+    "&longitude=" + encodeURIComponent(longitude) +
+    "&method=" + SETTINGS.method +
+    "&school=" + SETTINGS.school;
 
   const response = await fetch(url);
   if (!response.ok) throw new Error("Koordinata göre vakit API yanıt vermedi.");
   const result = await response.json();
-  prayerTimes = result.data.timings;
+  prayerTimes = normalizePrayerTimings(result?.data?.timings);
   currentTimingsDateKey = getDateKey(date);
+  console.log("API vakitleri:", prayerTimes);
 }
 
 async function loadPrayerTimesByCity(city) {
   const url =
-    `https://api.aladhan.com/v1/timingsByCity` +
-    `?city=${encodeURIComponent(city)}` +
-    `&country=Turkey` +
-    `&method=${SETTINGS.method}` +
-    `&school=${SETTINGS.school}`;
+    "https://api.aladhan.com/v1/timingsByCity" +
+    "?city=" + encodeURIComponent(city) +
+    "&country=Turkey" +
+    "&method=" + SETTINGS.method +
+    "&school=" + SETTINGS.school;
 
   const response = await fetch(url);
   if (!response.ok) throw new Error("Şehre göre vakit API yanıt vermedi.");
   const result = await response.json();
-  prayerTimes = result.data.timings;
+  prayerTimes = normalizePrayerTimings(result?.data?.timings);
   currentTimingsDateKey = getDateKey();
+  console.log("API vakitleri:", prayerTimes);
 }
 
 async function applyLocation(location, options = {}) {
+  const previousLocation = currentLocation;
+  const previousPrayerTimes = { ...prayerTimes };
+  const previousTimingsDateKey = currentTimingsDateKey;
+  const hadPrayerTimes = hasPrayerTimes(previousPrayerTimes);
+
   currentLocation = location;
+  console.log("Aktif konum:", location);
   el.cityName.textContent = location.label || "Konum belirleniyor...";
   el.statusText.textContent = "Vakitler yükleniyor...";
-
-  if (options.save) saveLocation(location);
+  clearRenderedTimes();
 
   try {
     if (Number.isFinite(location.latitude) && Number.isFinite(location.longitude)) {
@@ -282,14 +348,29 @@ async function applyLocation(location, options = {}) {
 
     renderTimes();
     updateScreen();
+    if (options.save) saveLocation(location);
     el.statusText.textContent = audioUnlocked ? "Vakitler güncel." : "Ses için ekrana bir kere dokunun.";
   } catch (error) {
     console.error("Vakitler alınamadı:", error);
-    el.statusText.textContent = "Vakitler alınamadı. Varsayılan konum deneniyor.";
+
+    if (hadPrayerTimes) {
+      currentLocation = previousLocation;
+      prayerTimes = previousPrayerTimes;
+      currentTimingsDateKey = previousTimingsDateKey;
+      el.cityName.textContent = previousLocation?.label || "Konum belirleniyor...";
+      renderTimes();
+      updateScreen();
+      el.statusText.textContent = "Vakitler güncellenemedi. Mevcut vakitler korunuyor.";
+      return;
+    }
 
     if (location !== DEFAULT_LOCATION) {
+      el.statusText.textContent = "Vakitler alınamadı. Varsayılan konum deneniyor.";
       await applyLocation(DEFAULT_LOCATION, { save: false });
+      return;
     }
+
+    el.statusText.textContent = "Vakitler alınamadı. Bağlantıyı kontrol edin.";
   }
 }
 
@@ -305,7 +386,9 @@ function closeLocationModal() {
 }
 
 async function useBrowserLocation(options = {}) {
-  el.cityName.textContent = "Konum belirleniyor...";
+  const silent = Boolean(options.silent);
+  if (!silent) el.cityName.textContent = "Konum belirleniyor...";
+
   try {
     const position = await requestBrowserLocation();
     const { latitude, longitude } = position.coords;
@@ -317,14 +400,27 @@ async function useBrowserLocation(options = {}) {
       console.warn("Konum adı bulunamadı:", error);
     }
 
-    await applyLocation({ latitude, longitude, label }, { save: true });
+    const location = { latitude, longitude, label };
+
+    if (currentLocation && !isMeaningfullyDifferentLocation(currentLocation, location)) {
+      currentLocation = { ...currentLocation, latitude, longitude, label };
+      el.cityName.textContent = label;
+      saveLocation(currentLocation);
+      if (!silent) closeLocationModal();
+      return;
+    }
+
+    await applyLocation(location, { save: true });
     closeLocationModal();
   } catch (error) {
     console.warn("Konum izni alınamadı:", error);
+
+    if (silent) return;
+
     el.statusText.textContent = "Konum izni verilmedi. Şehir seçebilirsiniz.";
     openLocationModal();
 
-    if (options.fallbackToDefault) {
+    if (options.fallbackToDefault && !hasPrayerTimes()) {
       await applyLocation(DEFAULT_LOCATION, { save: false });
     }
   }
@@ -595,10 +691,13 @@ function syncPresentationMode() {
 async function initLocation() {
   el.cityName.textContent = "Konum belirleniyor...";
   const savedLocation = getSavedLocation();
+
   if (savedLocation) {
     await applyLocation(savedLocation, { save: false });
+    await useBrowserLocation({ fallbackToDefault: false, silent: true });
     return;
   }
+
   await useBrowserLocation({ fallbackToDefault: true });
 }
 
