@@ -12,7 +12,7 @@
 
   <title>Namaz Vakti TV</title>
 
-  <link rel="stylesheet" href="./style.css?v=35" />
+  <link rel="stylesheet" href="./style.css?v=40" />
 </head>
 
 <body class="tv-root">
@@ -46,7 +46,10 @@
     <button class="presentationExitButton" id="presentationExitButton" type="button" aria-label="Sunum modundan çık">Çıkış</button>
 
     <section class="topbar">
-      <div class="city" id="cityName">Mersin Merkez</div>
+      <div class="cityBlock">
+        <div class="city" id="cityName">Konum belirleniyor...</div>
+        <button class="locationButton" id="locationButton" type="button" aria-label="Konumu güncelle">Konumu Güncelle</button>
+      </div>
 
       <div class="clockBox">
         <div class="date" id="todayText">Yükleniyor...</div>
@@ -113,7 +116,7 @@
   </main>
 
   <audio id="warningSound" src="./assets/beep.mp3" preload="auto"></audio>
-  <script src="./script.js?v=35"></script>
-  <script src="./test-mode.js?v=35"></script>
+  <script src="./script.js?v=40"></script>
+  <script src="./test-mode.js?v=40"></script>
 </body>
 </html>

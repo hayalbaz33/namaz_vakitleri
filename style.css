@@ -192,7 +192,7 @@ body {
   mix-blend-mode: screen;
   opacity: .42;
 }
-`r`n
+
 .planet::after {
   content: "";
   position: absolute;
@@ -562,6 +562,7 @@ body.warning .timeCard.active {
     width: 100%;
     min-width: 0;
     min-height: 100svh;
+    min-height: 100dvh;
     height: auto;
     overflow: hidden;
     padding-bottom: 46px;
@@ -800,6 +801,7 @@ body.warning .timeCard.active {
     min-width: 0 !important;
     height: auto !important;
     min-height: 100svh !important;
+      min-height: 100dvh !important;
     overflow: hidden !important;
     padding-bottom: 70px !important;
   }
@@ -944,6 +946,7 @@ body.warning .timeCard.active {
       min-width: 0 !important;
       height: auto !important;
       min-height: 100svh !important;
+      min-height: 100dvh !important;
       min-height: -webkit-fill-available !important;
       overflow: hidden !important;
       padding-bottom: 80px !important;
@@ -1012,6 +1015,12 @@ footer {
   pointer-events: auto !important;
 }
 
+.locationButton,
+.locationModal,
+.locationModal * {
+  pointer-events: auto !important;
+}
+
 @supports (-webkit-touch-callout: none) {
   @media (min-width: 700px) and (max-width: 1200px) {
     body {
@@ -1022,6 +1031,7 @@ footer {
       min-width: 0 !important;
       height: auto !important;
       min-height: 100svh !important;
+      min-height: 100dvh !important;
       min-height: -webkit-fill-available !important;
       overflow: hidden !important;
       padding-bottom: 90px !important;
@@ -1334,3 +1344,157 @@ body.presentation-mode footer {
     pointer-events: none;
   }
 }
+
+
+/* location controls */
+.cityBlock {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.cityBlock .city {
+  max-width: min(920px, 58vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(34px, 4.1vw, 78px);
+}
+
+.locationButton {
+  flex: none;
+  padding: 10px 13px;
+  border: 1px solid rgba(214, 177, 106, .42);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .28);
+  color: rgba(255, 255, 255, .72);
+  font: 700 11px/1 "Inter", Arial, sans-serif;
+  letter-spacing: 1px;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  pointer-events: auto !important;
+}
+
+.locationButton:hover {
+  color: #fff;
+  border-color: rgba(214, 177, 106, .78);
+}
+
+.locationModal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, .58);
+  backdrop-filter: blur(10px);
+  pointer-events: auto !important;
+}
+
+.locationModal.active {
+  display: flex;
+}
+
+.locationModal,
+.locationModal * {
+  pointer-events: auto !important;
+}
+
+.locationPanel {
+  position: relative;
+  width: min(520px, 100%);
+  padding: 34px;
+  border: 1px solid rgba(214, 177, 106, .35);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(18, 22, 31, .96), rgba(2, 4, 9, .96));
+  color: #fff;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .55);
+}
+
+.locationCloseButton {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .04);
+  color: rgba(255, 255, 255, .72);
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.locationEyebrow {
+  margin: 0 0 8px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 4px;
+}
+
+.locationPanel h2 {
+  margin: 0 0 12px;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.locationHelp {
+  margin: 0 0 22px;
+  color: rgba(255, 255, 255, .62);
+  line-height: 1.5;
+}
+
+.locationForm {
+  display: flex;
+  gap: 10px;
+}
+
+.locationForm input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 15px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .32);
+  color: #fff;
+  outline: none;
+}
+
+.locationForm button,
+.useBrowserLocationButton {
+  padding: 14px 17px;
+  border: 1px solid rgba(214, 177, 106, .5);
+  border-radius: 999px;
+  background: rgba(214, 177, 106, .12);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.useBrowserLocationButton {
+  width: 100%;
+  margin-top: 12px;
+  background: rgba(255, 255, 255, .05);
+}
+
+@media (max-width: 900px) {
+  .cityBlock {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cityBlock .city {
+    max-width: 100%;
+  }
+
+  .locationForm {
+    flex-direction: column;
+  }
+}
+/* location controls end */
+
